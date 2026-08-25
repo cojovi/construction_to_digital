@@ -3,8 +3,9 @@
 **Project:** Construction to Digital marketing website  
 **Canonical domain:** `https://constructiontodigital.com`  
 **Workspace:** `/Volumes/FastSSD/github/my repos/construction_to_digital`  
-**Progress snapshot:** 2026-08-24 22:27 CDT  
-**Current phase status:** Initial design, implementation, technical SEO, security hardening, and local production verification are complete.  
+**GitHub:** https://github.com/cojovi/construction_to_digital  
+**Progress snapshot:** 2026-08-24 22:45 CDT  
+**Current phase status:** Initial design, implementation, technical SEO, security hardening, local production verification, Git initialization, and GitHub push are complete.  
 **Runtime status at handoff:** All task-related local servers and background development processes are stopped. Ports `3000` and `3100` have no listeners. The in-app preview was closed.
 
 ---
@@ -27,7 +28,7 @@ The completed initial scope includes:
 - A custom 404 experience with an unambiguous `noindex` response and no incorrect homepage canonical.
 - A verified Next.js production build and zero reported npm vulnerabilities.
 
-No deployment, DNS change, Git initialization, commit, push, production analytics setup, or production lead-form integration has been performed yet.
+Git is initialized and the public GitHub repository `cojovi/construction_to_digital` exists at https://github.com/cojovi/construction_to_digital. The initial commit is on `main`. No deployment, DNS change, production analytics setup, or production lead-form integration has been performed yet.
 
 ---
 
@@ -1346,10 +1347,10 @@ After that baseline is safely deployed, build the real lead-capture pipeline bef
 - Independent code/security review
 - Final hardening pass
 - Local server and background-process shutdown
+- Git initialization, initial commit, GitHub repo creation, and push to `origin/main`
 
 ### Not completed by design
 
-- Git initialization and commits
 - Hosting/deployment
 - DNS and domain attachment
 - Production analytics credentials
