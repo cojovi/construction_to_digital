@@ -1,20 +1,43 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Chivo_Mono, Sora } from "next/font/google";
 import { JsonLd } from "@/components/json-ld";
 import { MarketingAnalytics } from "@/components/marketing-analytics";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { Atmosphere, FrameMarks } from "@/components/hud/atmosphere";
+import { BootSequence } from "@/components/hud/boot-sequence";
+import { HudFooter } from "@/components/hud/hud-footer";
+import { HudHeader } from "@/components/hud/hud-header";
+import { ReticleCursor } from "@/components/hud/reticle-cursor";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
+import "./hud.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/**
+ * Type system for SURVEY // LIVE INSTRUMENT:
+ *   Archivo    — the display face. Grotesque with tight apertures; holds up at
+ *                7rem with -0.048em tracking without turning into mush.
+ *   Sora       — body. Geometric, slightly technical, reads cleanly at weight 300.
+ *   Chivo Mono — every readout, label, and data string. This is the voice of
+ *                the instrument.
+ */
+const displayFont = Archivo({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bodyFont = Sora({
+  variable: "--font-body-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  display: "swap",
+});
+
+const monoFont = Chivo_Mono({
+  variable: "--font-mono-data",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -113,14 +136,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`hud-root ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} h-full antialiased`}
     >
-      <body>
+      <body className="hud-body">
         <JsonLd data={organizationSchema} />
         <a className="skip-link" href="#main-content">Skip to content</a>
-        <SiteHeader />
+        <BootSequence />
+        <Atmosphere />
+        <FrameMarks />
+        <ReticleCursor />
+        <HudHeader />
         {children}
-        <SiteFooter />
+        <HudFooter />
         <MarketingAnalytics />
       </body>
     </html>
