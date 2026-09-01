@@ -10,15 +10,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRightIcon, ListIcon, XIcon } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { demoMailto, navigation, siteConfig } from "@/lib/site";
 import { GLIDE } from "./motion-primitives";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
 export function HudHeader() {
   const [open, setOpen] = useState(false);
   const [clock, setClock] = useState("--:--:--");
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   useEffect(() => {
     const tick = () => {

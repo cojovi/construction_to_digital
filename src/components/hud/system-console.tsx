@@ -19,10 +19,11 @@ import {
   CubeFocusIcon,
   ReceiptIcon,
 } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { solutions, type SolutionIcon as SolutionIconName } from "@/lib/solutions";
 import { GLIDE, SETTLE } from "./motion-primitives";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
 function ChannelIcon({ name, size = 22 }: { name: SolutionIconName; size?: number }) {
   const props = { size, weight: "light" as const, "aria-hidden": true };
@@ -40,7 +41,7 @@ function ChannelIcon({ name, size = 22 }: { name: SolutionIconName; size?: numbe
 
 export function SystemConsole() {
   const [index, setIndex] = useState(0);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const active = solutions[index];
 
   function move(next: number) {

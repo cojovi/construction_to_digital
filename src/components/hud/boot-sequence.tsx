@@ -10,8 +10,9 @@
  * Skipped entirely under prefers-reduced-motion.
  */
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
 const LINES = [
   { label: "Survey link", value: "ONLINE", gate: false },
@@ -23,7 +24,7 @@ const LINES = [
 const KEY = "c2d-hud-boot";
 
 export function BootSequence() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const [step, setStep] = useState(0);
 
   useEffect(() => {

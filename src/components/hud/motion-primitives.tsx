@@ -17,11 +17,11 @@ import {
   useInView,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
 } from "motion/react";
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
 export const SNAP = { type: "spring", stiffness: 420, damping: 32 } as const;
 export const SETTLE = { type: "spring", stiffness: 260, damping: 26 } as const;
@@ -42,7 +42,7 @@ export function Lift({
   delay?: number;
   y?: number;
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   if (reduceMotion) {
     return <div className={className}>{children}</div>;
@@ -78,7 +78,7 @@ export function ScrambleText({
   duration?: number;
   startDelay?: number;
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const ref = useRef<HTMLSpanElement | null>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const [output, setOutput] = useState(text);
@@ -134,7 +134,7 @@ export function HoloCard({
   children: ReactNode;
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
@@ -190,7 +190,7 @@ export function CountUp({
   decimals?: number;
   duration?: number;
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const ref = useRef<HTMLSpanElement | null>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
   const [progress, setProgress] = useState(0);
@@ -234,7 +234,7 @@ export function TelemetryMarquee({
   items: readonly TelemetryItem[];
   speed?: number;
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   const row = (keyPrefix: string) => (
     <>

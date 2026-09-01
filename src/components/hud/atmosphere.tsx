@@ -14,15 +14,15 @@
 
 import {
   motion,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   useVelocity,
 } from "motion/react";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
 export function Atmosphere() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const { scrollY } = useScroll();
 
   const velocity = useVelocity(scrollY);

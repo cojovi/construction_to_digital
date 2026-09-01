@@ -8,11 +8,12 @@
  * only — hidden on touch via CSS and never mounted under reduced motion.
  */
 
-import { motion, useMotionValue, useSpring, useReducedMotion } from "motion/react";
+import { motion, useMotionValue, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
 export function ReticleCursor() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const [state, setState] = useState({ enabled: false, hot: false, x: 0, y: 0 });
 
   const rawX = useMotionValue(-100);

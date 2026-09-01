@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import type { ReactNode } from "react";
+import { useHydratedReducedMotion } from "@/components/hud/use-hydrated-reduced-motion";
 
 type Props = {
   children: ReactNode;
@@ -10,7 +11,7 @@ type Props = {
 };
 
 export function Reveal({ children, className, delay = 0 }: Props) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
 
   if (reduceMotion) {
     return <div className={className}>{children}</div>;

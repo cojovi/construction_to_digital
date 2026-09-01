@@ -8,9 +8,10 @@ import {
   CubeFocusIcon,
   ReceiptIcon,
 } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { solutions, type SolutionIcon as SolutionIconName } from "@/lib/solutions";
+import { useHydratedReducedMotion } from "@/components/hud/use-hydrated-reduced-motion";
 
 function ExplorerIcon({ name }: { name: SolutionIconName }) {
   const props = { size: 23, weight: "light" as const, "aria-hidden": true };
@@ -29,7 +30,7 @@ function ExplorerIcon({ name }: { name: SolutionIconName }) {
 
 export function SolutionExplorer() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   const active = solutions[activeIndex];
 
   function moveSelection(nextIndex: number) {

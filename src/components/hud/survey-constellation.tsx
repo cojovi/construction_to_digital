@@ -1,149 +1,158 @@
 "use client";
 
 /**
- * SURVEY CONSTELLATION
+ * DIGITAL TWIN STAGE
  * ---------------------------------------------------------------------------
- * A single particle field that carries the entire brand thesis in one gesture:
- *
- *   SCATTER  ->  3D WIREFRAME HOUSE  ->  ROOF PLAN  ->  DATA MATRIX
- *   (chaos)      (physical work)        (survey)       (digital leverage)
- *
- * Every particle is assigned an independent target per shape. The frame blends
- * between two adjacent shapes, and the wireframe edges are drawn from BOTH
- * shapes' adjacency lists at complementary alpha, so the structure itself
- * appears to morph rather than cross-fade.
- *
- * Stage 0 -> 1 is driven by an intro spring on mount.
- * Stage 1 -> 3 is driven by hero scroll progress.
+ * Solid and glass surfaces establish the building first; survey particles,
+ * a laser section plane, exploded BIM layers, and technical callouts provide
+ * the motion-graphics layer without turning the house into decorative lights.
  */
 
-import { useScroll, useReducedMotion } from "motion/react";
+import { useScroll } from "motion/react";
 import { useEffect, useRef } from "react";
+import { useHydratedReducedMotion } from "./use-hydrated-reduced-motion";
 
-type Vec = { x: number; y: number; z: number; edge: number };
+type Vec3 = { x: number; y: number; z: number };
+type ScreenPoint = { x: number; y: number; depth: number };
+type Material = "shell" | "glass" | "roof" | "slab" | "core";
+type ModelFace = { points: readonly Vec3[]; material: Material; group: number };
+type ModelEdge = { a: Vec3; b: Vec3; group: number; strength?: number };
 
-const CYAN = [22, 200, 244] as const;
-const CYAN_HOT = [133, 240, 255] as const;
-const AMBER = [255, 181, 36] as const;
-const MAGENTA = [255, 61, 120] as const;
+const CYAN = "22, 200, 244";
+const CYAN_HOT = "133, 240, 255";
+const AMBER = "255, 181, 36";
+const INK = "222, 247, 255";
 
-/** Deterministic hash-based PRNG so SSR and client agree and frames are stable. */
+const GROUP_OFFSETS: readonly Vec3[] = [
+  { x: 0, y: -0.14, z: 0 },
+  { x: -0.34, y: 0.05, z: 0.18 },
+  { x: 0.38, y: 0.06, z: -0.2 },
+  { x: 0, y: 0.48, z: 0 },
+  { x: 0, y: 0.72, z: 0 },
+];
+
 function rand(seed: number) {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return x - Math.floor(x);
 }
 
-/** Distribute `count` points along a polyline edge list, tagging edge ownership. */
-function alongEdges(
-  edges: readonly (readonly [number, number, number, number, number, number])[],
-  count: number,
-): Vec[] {
-  const lengths = edges.map(([ax, ay, az, bx, by, bz]) =>
-    Math.hypot(bx - ax, by - ay, bz - az),
-  );
-  const total = lengths.reduce((a, b) => a + b, 0);
-  const out: Vec[] = [];
-
-  edges.forEach((edge, edgeIndex) => {
-    const [ax, ay, az, bx, by, bz] = edge;
-    const share = Math.max(2, Math.round((lengths[edgeIndex] / total) * count));
-    for (let i = 0; i < share; i += 1) {
-      const t = share === 1 ? 0 : i / (share - 1);
-      out.push({
-        x: ax + (bx - ax) * t,
-        y: ay + (by - ay) * t,
-        z: az + (bz - az) * t,
-        edge: edgeIndex,
-      });
-    }
-  });
-
-  // Normalize to exactly `count` entries.
-  while (out.length > count) out.pop();
-  while (out.length < count) {
-    const donor = out[out.length - 1] ?? { x: 0, y: 0, z: 0, edge: -1 };
-    out.push({ x: donor.x, y: donor.y, z: donor.z, edge: -1 });
-  }
-  return out;
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
 }
 
-/* --------------------------------------------------------------------------
-   SHAPE 1 — gable house, 3D wireframe
-   -------------------------------------------------------------------------- */
-const HX = 0.84;
-const HZ = 0.54;
-const Y_FLOOR = -0.44;
-const Y_EAVE = 0.08;
-const Y_RIDGE = 0.52;
+function easeOutExpo(value: number) {
+  return value >= 1 ? 1 : 1 - 2 ** (-10 * value);
+}
 
-type E = readonly [number, number, number, number, number, number];
+function smooth(value: number) {
+  const v = clamp(value);
+  return v * v * (3 - 2 * v);
+}
 
-const HOUSE_EDGES: readonly E[] = [
-  // floor slab
-  [-HX, Y_FLOOR, -HZ, HX, Y_FLOOR, -HZ],
-  [HX, Y_FLOOR, -HZ, HX, Y_FLOOR, HZ],
-  [HX, Y_FLOOR, HZ, -HX, Y_FLOOR, HZ],
-  [-HX, Y_FLOOR, HZ, -HX, Y_FLOOR, -HZ],
-  // corner posts
-  [-HX, Y_FLOOR, -HZ, -HX, Y_EAVE, -HZ],
-  [HX, Y_FLOOR, -HZ, HX, Y_EAVE, -HZ],
-  [HX, Y_FLOOR, HZ, HX, Y_EAVE, HZ],
-  [-HX, Y_FLOOR, HZ, -HX, Y_EAVE, HZ],
-  // eave ring
-  [-HX, Y_EAVE, -HZ, HX, Y_EAVE, -HZ],
-  [HX, Y_EAVE, -HZ, HX, Y_EAVE, HZ],
-  [HX, Y_EAVE, HZ, -HX, Y_EAVE, HZ],
-  [-HX, Y_EAVE, HZ, -HX, Y_EAVE, -HZ],
-  // gables + ridge
-  [-HX, Y_EAVE, -HZ, 0, Y_RIDGE, -HZ],
-  [HX, Y_EAVE, -HZ, 0, Y_RIDGE, -HZ],
-  [-HX, Y_EAVE, HZ, 0, Y_RIDGE, HZ],
-  [HX, Y_EAVE, HZ, 0, Y_RIDGE, HZ],
-  [0, Y_RIDGE, -HZ, 0, Y_RIDGE, HZ],
-  // door on the front elevation
-  [-0.15, Y_FLOOR, -HZ, -0.15, -0.09, -HZ],
-  [-0.15, -0.09, -HZ, 0.15, -0.09, -HZ],
-  [0.15, -0.09, -HZ, 0.15, Y_FLOOR, -HZ],
-  // window on the front elevation
-  [0.4, -0.3, -HZ, 0.68, -0.3, -HZ],
-  [0.68, -0.3, -HZ, 0.68, -0.06, -HZ],
-  [0.68, -0.06, -HZ, 0.4, -0.06, -HZ],
-  [0.4, -0.06, -HZ, 0.4, -0.3, -HZ],
-  // ridge beam drop
-  [0, Y_RIDGE, 0, 0, Y_EAVE, 0],
-];
+function box(
+  min: Vec3,
+  max: Vec3,
+  material: Material,
+  group: number,
+): { faces: ModelFace[]; edges: ModelEdge[] } {
+  const v = [
+    { x: min.x, y: min.y, z: min.z },
+    { x: max.x, y: min.y, z: min.z },
+    { x: max.x, y: max.y, z: min.z },
+    { x: min.x, y: max.y, z: min.z },
+    { x: min.x, y: min.y, z: max.z },
+    { x: max.x, y: min.y, z: max.z },
+    { x: max.x, y: max.y, z: max.z },
+    { x: min.x, y: max.y, z: max.z },
+  ] as const;
+  const faces: ModelFace[] = [
+    { points: [v[0], v[1], v[2], v[3]], material, group },
+    { points: [v[5], v[4], v[7], v[6]], material, group },
+    { points: [v[4], v[0], v[3], v[7]], material, group },
+    { points: [v[1], v[5], v[6], v[2]], material, group },
+    { points: [v[3], v[2], v[6], v[7]], material, group },
+    { points: [v[4], v[5], v[1], v[0]], material, group },
+  ];
+  const pairs = [
+    [0, 1], [1, 2], [2, 3], [3, 0],
+    [4, 5], [5, 6], [6, 7], [7, 4],
+    [0, 4], [1, 5], [2, 6], [3, 7],
+  ] as const;
+  return {
+    faces,
+    edges: pairs.map(([a, b]) => ({ a: v[a], b: v[b], group })),
+  };
+}
 
-/* --------------------------------------------------------------------------
-   SHAPE 2 — roof plan, orthographic top-down with dimension string
-   -------------------------------------------------------------------------- */
-const PLAN_EDGES: readonly E[] = [
-  // roof outline
-  [-0.86, -0.5, 0, 0.86, -0.5, 0],
-  [0.86, -0.5, 0, 0.86, 0.5, 0],
-  [0.86, 0.5, 0, -0.86, 0.5, 0],
-  [-0.86, 0.5, 0, -0.86, -0.5, 0],
-  // ridge
-  [-0.44, 0, 0, 0.44, 0, 0],
-  // hips
-  [-0.86, -0.5, 0, -0.44, 0, 0],
-  [-0.86, 0.5, 0, -0.44, 0, 0],
-  [0.86, -0.5, 0, 0.44, 0, 0],
-  [0.86, 0.5, 0, 0.44, 0, 0],
-  // dimension string
-  [-0.86, 0.76, 0, 0.86, 0.76, 0],
-  [-0.86, 0.7, 0, -0.86, 0.82, 0],
-  [0.86, 0.7, 0, 0.86, 0.82, 0],
-  // vertical dimension
-  [1.02, -0.5, 0, 1.02, 0.5, 0],
-  [0.96, -0.5, 0, 1.08, -0.5, 0],
-  [0.96, 0.5, 0, 1.08, 0.5, 0],
-];
+function gableRoof(
+  xMin: number,
+  xMax: number,
+  yEave: number,
+  yRidge: number,
+  zMin: number,
+  zMax: number,
+  group: number,
+): { faces: ModelFace[]; edges: ModelEdge[] } {
+  const zMid = (zMin + zMax) / 2;
+  const v = [
+    { x: xMin, y: yEave, z: zMin },
+    { x: xMin, y: yRidge, z: zMid },
+    { x: xMin, y: yEave, z: zMax },
+    { x: xMax, y: yEave, z: zMin },
+    { x: xMax, y: yRidge, z: zMid },
+    { x: xMax, y: yEave, z: zMax },
+  ] as const;
+  const faces: ModelFace[] = [
+    { points: [v[0], v[3], v[4], v[1]], material: "roof", group },
+    { points: [v[1], v[4], v[5], v[2]], material: "roof", group },
+    { points: [v[0], v[1], v[2]], material: "shell", group },
+    { points: [v[3], v[5], v[4]], material: "shell", group },
+  ];
+  const pairs = [
+    [0, 1], [1, 2], [0, 2], [3, 4], [4, 5], [3, 5],
+    [0, 3], [1, 4], [2, 5],
+  ] as const;
+  return {
+    faces,
+    edges: pairs.map(([a, b]) => ({ a: v[a], b: v[b], group, strength: 1.2 })),
+  };
+}
+
+function buildModel() {
+  const pieces = [
+    box({ x: -0.58, y: -0.48, z: -0.38 }, { x: 0.58, y: 0.18, z: 0.38 }, "core", 0),
+    box({ x: -1.02, y: -0.48, z: -0.3 }, { x: -0.28, y: 0.04, z: 0.5 }, "shell", 1),
+    box({ x: 0.38, y: -0.48, z: -0.5 }, { x: 1.02, y: 0.24, z: 0.3 }, "glass", 2),
+    box({ x: -0.7, y: 0.18, z: -0.32 }, { x: 0.18, y: 0.52, z: 0.3 }, "glass", 3),
+    gableRoof(-1.08, -0.22, 0.07, 0.36, -0.36, 0.56, 4),
+    box({ x: 0.3, y: 0.24, z: -0.57 }, { x: 1.1, y: 0.3, z: 0.38 }, "roof", 4),
+    box({ x: -0.72, y: -0.53, z: -0.5 }, { x: 1.08, y: -0.48, z: 0.54 }, "slab", 0),
+  ];
+  return {
+    faces: pieces.flatMap((piece) => piece.faces),
+    edges: pieces.flatMap((piece) => piece.edges),
+  };
+}
+
+const MODEL = buildModel();
+const SURVEY_POINTS = Array.from({ length: 290 }, (_, index) => {
+  const angle = rand(index * 2.31) * Math.PI * 2;
+  const radius = 0.9 + rand(index * 4.17 + 2) * 0.5;
+  return {
+    point: {
+      x: Math.cos(angle) * radius,
+      y: -0.5 + rand(index * 8.91 + 4) * 1.2,
+      z: Math.sin(angle) * radius * 0.72,
+    },
+    phase: rand(index * 12.7 + 7) * Math.PI * 2,
+    tone: rand(index * 19.3 + 9),
+  };
+});
 
 export function SurveyConstellation() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const reduceMotion = useReducedMotion();
-
+  const reduceMotion = useHydratedReducedMotion();
   const { scrollYProgress } = useScroll({
     target: wrapRef,
     offset: ["start start", "end start"],
@@ -153,281 +162,304 @@ export function SurveyConstellation() {
     const canvas = canvasRef.current;
     const wrap = wrapRef.current;
     if (!canvas || !wrap) return;
-
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    const isSmall = window.matchMedia("(max-width: 700px)").matches;
-    const COUNT = isSmall ? 620 : 1080;
-
-    /* ---- Precompute per-shape targets ---------------------------------- */
-    const houseTargets = alongEdges(HOUSE_EDGES, COUNT);
-    const planTargets = alongEdges(PLAN_EDGES, COUNT);
-
-    const scatterTargets: Vec[] = Array.from({ length: COUNT }, (_, i) => {
-      const a = rand(i * 1.3) * Math.PI * 2;
-      const b = Math.acos(2 * rand(i * 2.7 + 9) - 1);
-      const r = 0.55 + rand(i * 3.1 + 4) * 0.85;
-      return {
-        x: Math.sin(b) * Math.cos(a) * r,
-        y: Math.cos(b) * r * 0.72,
-        z: Math.sin(b) * Math.sin(a) * r,
-        edge: -1,
-      };
-    });
-
-    const COLS = isSmall ? 16 : 26;
-    const ROWS = Math.ceil(COUNT / COLS);
-    const matrixTargets: Vec[] = Array.from({ length: COUNT }, (_, i) => {
-      const c = i % COLS;
-      const r = Math.floor(i / COLS);
-      return {
-        x: (c / (COLS - 1) - 0.5) * 1.86,
-        y: (r / Math.max(1, ROWS - 1) - 0.5) * 1.34,
-        z: 0,
-        edge: -1,
-      };
-    });
-
-    /* ---- Particle state ------------------------------------------------- */
-    const px = new Float32Array(COUNT);
-    const py = new Float32Array(COUNT);
-    const seeded = new Float32Array(COUNT);
-    const tone = new Uint8Array(COUNT);
-
-    for (let i = 0; i < COUNT; i += 1) {
-      px[i] = (rand(i * 5.1) - 0.5) * 2.4;
-      py[i] = (rand(i * 7.7 + 3) - 0.5) * 2.4;
-      seeded[i] = rand(i * 11.3 + 17);
-      const roll = rand(i * 13.9 + 41);
-      tone[i] = roll > 0.94 ? 3 : roll > 0.8 ? 2 : roll > 0.72 ? 1 : 0;
-    }
-
-    /* ---- Sizing --------------------------------------------------------- */
-    let w = 0;
-    let h = 0;
+    let width = 1;
+    let height = 1;
     let dpr = 1;
+    let raf = 0;
+    let inViewport = true;
+    let documentVisible = !document.hidden;
+    let scrollProgress = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let intro = reduceMotion ? 1 : 0;
+    let previous = performance.now();
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = wrap.getBoundingClientRect();
-      w = Math.max(1, rect.width);
-      h = Math.max(1, rect.height);
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
+      width = Math.max(1, rect.width);
+      height = Math.max(1, rect.height);
+      dpr = Math.min(window.devicePixelRatio || 1, width < 700 ? 1.5 : 1.8);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(wrap);
     resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(wrap);
+    const monoFont = getComputedStyle(wrap).getPropertyValue("--hud-mono").trim() || "monospace";
 
-    /* ---- Pointer parallax ----------------------------------------------- */
-    let pointerX = 0;
-    let pointerY = 0;
-    let targetPX = 0;
-    let targetPY = 0;
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => { inViewport = entry.isIntersecting; },
+      { rootMargin: "120px" },
+    );
+    visibilityObserver.observe(wrap);
+    const onVisibilityChange = () => { documentVisible = !document.hidden; };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
-    const onPointer = (event: PointerEvent) => {
+    const unsubscribe = scrollYProgress.on("change", (value) => { scrollProgress = value; });
+    const onPointerMove = (event: PointerEvent) => {
       const rect = wrap.getBoundingClientRect();
-      targetPX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      targetPY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+      targetX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+      targetY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
     };
-    window.addEventListener("pointermove", onPointer, { passive: true });
+    const onPointerLeave = () => { targetX = 0; targetY = 0; };
+    wrap.addEventListener("pointermove", onPointerMove, { passive: true });
+    wrap.addEventListener("pointerleave", onPointerLeave);
 
-    /* ---- Stage blending -------------------------------------------------- */
-    let scrollP = 0;
-    const unsubscribe = scrollYProgress.on("change", (v) => {
-      scrollP = v;
-    });
-
-    let intro = reduceMotion ? 1 : 0;
-    let raf = 0;
-    let t0 = performance.now();
-
-    const easeOut = (v: number) => 1 - Math.pow(1 - v, 3);
-    const smooth = (v: number) => v * v * (3 - 2 * v);
+    const transformedPoint = (source: Vec3, group: number, assembly: number, explode: number) => {
+      const offset = GROUP_OFFSETS[group] ?? GROUP_OFFSETS[0];
+      const roofLift = group === 4 ? explode * 0.19 : group === 3 ? explode * 0.075 : 0;
+      const wingShift = group === 1 ? -explode * 0.055 : group === 2 ? explode * 0.075 : 0;
+      return {
+        x: source.x + offset.x * (1 - assembly) + wingShift,
+        y: source.y + offset.y * (1 - assembly) + roofLift,
+        z: source.z + offset.z * (1 - assembly),
+      };
+    };
 
     const draw = (now: number) => {
-      // Clamp to a non-negative delta: the first rAF timestamp can precede the
-      // `t0` captured at effect setup, which would drive `intro` negative and
-      // push the stage index below zero.
-      const dt = Math.min(48, Math.max(0, now - t0)) / 1000;
-      t0 = now;
-      const time = now / 1000;
-
-      if (intro < 1) intro = Math.min(1, Math.max(0, intro + dt / 1.9));
-
-      // Stage index: 0=scatter 1=house 2=plan 3=matrix
-      const introStage = easeOut(intro);
-      const stage = intro < 1 ? introStage : 1 + Math.min(1, scrollP / 0.9) * 2;
-
-      // Hard-clamp the pool indices — the draw loop must never index outside
-      // the four shape pools regardless of timing or scroll weirdness.
-      const lower = Math.min(2, Math.max(0, Math.floor(stage)));
-      const upper = Math.min(3, lower + 1);
-      const mix = smooth(Math.min(1, Math.max(0, stage - lower)));
-
-      const pools = [scatterTargets, houseTargets, planTargets, matrixTargets];
-      const poolA = pools[lower];
-      const poolB = pools[upper];
-
-      // Pointer easing
-      pointerX += (targetPX - pointerX) * 0.045;
-      pointerY += (targetPY - pointerY) * 0.045;
-
-      // Rotation only matters while the house is on screen.
-      const houseWeight = lower === 0 ? mix : lower === 1 ? 1 - mix : 0;
-      const spin = reduceMotion ? 0.55 : time * 0.22 + pointerX * 0.42;
-      const tilt = reduceMotion ? -0.2 : -0.2 + pointerY * 0.16;
-
-      const cs = Math.cos(spin);
-      const sn = Math.sin(spin);
-      const ct = Math.cos(tilt);
-      const st = Math.sin(tilt);
-
-      const cx = w / 2;
-      const cy = h / 2;
-      const R = Math.min(w, h) * 0.4;
-
-      const project = (v: Vec, weight: number) => {
-        // Blend between rotated-3D and flat presentation by shape weight.
-        const rx = v.x * cs + v.z * sn;
-        const rz = -v.x * sn + v.z * cs;
-        const ry = v.y * ct - rz * st;
-        const rz2 = v.y * st + rz * ct;
-
-        const fx = v.x;
-        const fy = v.y;
-
-        const bx = fx + (rx - fx) * weight;
-        const by = fy + (ry - fy) * weight;
-        const bz = rz2 * weight;
-
-        const persp = 1 / (1 + bz * 0.34);
-        return { sx: bx * persp, sy: -by * persp, depth: bz };
-      };
-
-      ctx.clearRect(0, 0, w, h);
-
-      // Blend each particle toward its interpolated target.
-      const bufX = new Float32Array(COUNT);
-      const bufY = new Float32Array(COUNT);
-      const bufD = new Float32Array(COUNT);
-
-      for (let i = 0; i < COUNT; i += 1) {
-        const a = project(poolA[i], lower === 1 ? 1 : lower === 0 ? mix : 0);
-        const b = project(poolB[i], upper === 1 ? 1 : upper === 0 ? mix : 0);
-
-        let tx = a.sx + (b.sx - a.sx) * mix;
-        let ty = a.sy + (b.sy - a.sy) * mix;
-        const depth = a.depth + (b.depth - a.depth) * mix;
-
-        // Idle shimmer keeps the field alive without reading as jitter.
-        if (!reduceMotion) {
-          const wobble = 0.008 + 0.02 * (1 - houseWeight);
-          tx += Math.sin(time * 0.8 + seeded[i] * 31.4) * wobble;
-          ty += Math.cos(time * 0.65 + seeded[i] * 17.9) * wobble;
-        }
-
-        const sx = cx + tx * R;
-        const sy = cy + ty * R;
-
-        // Spring toward target — staggered by seed so the swarm arrives in waves.
-        const k = reduceMotion ? 1 : 0.055 + seeded[i] * 0.055;
-        px[i] += (sx - px[i]) * (reduceMotion ? 1 : Math.min(1, k * (dt * 60)));
-        py[i] += (sy - py[i]) * (reduceMotion ? 1 : Math.min(1, k * (dt * 60)));
-
-        bufX[i] = px[i];
-        bufY[i] = py[i];
-        bufD[i] = depth;
-      }
-
-      /* ---- Wireframe edges (both shapes, complementary alpha) ---------- */
-      const strokePass = (pool: Vec[], alpha: number) => {
-        if (alpha <= 0.01) return;
-        ctx.beginPath();
-        for (let i = 0; i < COUNT - 1; i += 1) {
-          if (pool[i].edge < 0 || pool[i].edge !== pool[i + 1].edge) continue;
-          const dx = bufX[i + 1] - bufX[i];
-          const dy = bufY[i + 1] - bufY[i];
-          if (dx * dx + dy * dy > 9000) continue;
-          ctx.moveTo(bufX[i], bufY[i]);
-          ctx.lineTo(bufX[i + 1], bufY[i + 1]);
-        }
-        ctx.strokeStyle = `rgba(${CYAN[0]}, ${CYAN[1]}, ${CYAN[2]}, ${alpha})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      };
-
-      strokePass(poolA, (1 - mix) * 0.4);
-      strokePass(poolB, mix * 0.4);
-
-      /* ---- Particles, batched by tone ---------------------------------- */
-      const palettes = [CYAN, CYAN_HOT, AMBER, MAGENTA] as const;
-
-      for (let toneIndex = 0; toneIndex < palettes.length; toneIndex += 1) {
-        const [r, g, b] = palettes[toneIndex];
-        ctx.beginPath();
-        for (let i = 0; i < COUNT; i += 1) {
-          if (tone[i] !== toneIndex) continue;
-          const near = 1 - Math.min(1, Math.max(0, (bufD[i] + 0.6) / 1.4));
-          const size = 0.9 + near * 1.5;
-          ctx.moveTo(bufX[i] + size, bufY[i]);
-          ctx.arc(bufX[i], bufY[i], size, 0, Math.PI * 2);
-        }
-        const baseAlpha = toneIndex === 0 ? 0.85 : toneIndex === 1 ? 0.95 : 0.9;
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${baseAlpha})`;
-        ctx.fill();
-      }
-
-      /* ---- Bloom pass on the hot particles ------------------------------ */
-      if (!reduceMotion) {
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        ctx.beginPath();
-        for (let i = 0; i < COUNT; i += 4) {
-          const pulse = 0.5 + 0.5 * Math.sin(time * 1.6 + seeded[i] * 24);
-          if (pulse < 0.72) continue;
-          ctx.moveTo(bufX[i] + 3.4, bufY[i]);
-          ctx.arc(bufX[i], bufY[i], 3.4, 0, Math.PI * 2);
-        }
-        ctx.fillStyle = "rgba(22, 200, 244, 0.09)";
-        ctx.fill();
-        ctx.restore();
-      }
-
       raf = requestAnimationFrame(draw);
+      if (!inViewport || !documentVisible) return;
+
+      const dt = Math.min(48, Math.max(0, now - previous)) / 1000;
+      previous = now;
+      if (!reduceMotion) intro = clamp(intro + dt / 1.35);
+
+      const assembly = reduceMotion ? 1 : easeOutExpo(intro);
+      const explode = reduceMotion ? 0.38 : smooth(scrollProgress * 1.55);
+      const time = reduceMotion ? 2.4 : now / 1000;
+      pointerX += (targetX - pointerX) * (reduceMotion ? 1 : 0.045);
+      pointerY += (targetY - pointerY) * (reduceMotion ? 1 : 0.045);
+
+      const yaw = -0.64 + pointerX * 0.12 - explode * 0.1;
+      const pitch = -0.29 + pointerY * 0.075 + explode * 0.06;
+      const cosY = Math.cos(yaw);
+      const sinY = Math.sin(yaw);
+      const cosX = Math.cos(pitch);
+      const sinX = Math.sin(pitch);
+      const isCompact = width < 700;
+      const radius = isCompact ? width * 0.27 : Math.min(width, height) * 0.31;
+      const centerX = width * (isCompact ? 0.48 : 0.31);
+      const centerY = height * 0.51;
+
+      const project = (source: Vec3): ScreenPoint => {
+        const rx = source.x * cosY + source.z * sinY;
+        const rz = -source.x * sinY + source.z * cosY;
+        const ry = source.y * cosX - rz * sinX;
+        const depth = source.y * sinX + rz * cosX;
+        const perspective = 1 / (1.08 + depth * 0.12);
+        return { x: centerX + rx * radius * perspective, y: centerY - ry * radius * perspective, depth };
+      };
+
+      ctx.clearRect(0, 0, width, height);
+
+      const bloom = ctx.createRadialGradient(centerX, centerY, radius * 0.08, centerX, centerY, radius * 1.35);
+      bloom.addColorStop(0, `rgba(${CYAN}, 0.12)`);
+      bloom.addColorStop(0.48, `rgba(${CYAN}, 0.035)`);
+      bloom.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = bloom;
+      ctx.fillRect(0, 0, width, height);
+
+      // Survey ground plane.
+      ctx.lineWidth = 0.65;
+      for (let grid = -7; grid <= 7; grid += 1) {
+        const alpha = grid === 0 ? 0.24 : 0.075;
+        const a = project({ x: grid * 0.2, y: -0.54, z: -1.45 });
+        const b = project({ x: grid * 0.2, y: -0.54, z: 1.45 });
+        const c = project({ x: -1.45, y: -0.54, z: grid * 0.2 });
+        const d = project({ x: 1.45, y: -0.54, z: grid * 0.2 });
+        ctx.strokeStyle = `rgba(${CYAN}, ${alpha * assembly})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        ctx.moveTo(c.x, c.y); ctx.lineTo(d.x, d.y);
+        ctx.stroke();
+      }
+
+      // Orbital calibration rings.
+      ctx.save();
+      ctx.translate(centerX, centerY + radius * 0.06);
+      ctx.rotate(-0.18);
+      ctx.setLineDash([3, 8]);
+      ctx.lineWidth = 0.7;
+      ctx.strokeStyle = `rgba(${CYAN_HOT}, ${0.19 * assembly})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radius * 1.2, radius * 0.47, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([1, 13]);
+      ctx.strokeStyle = `rgba(${AMBER}, ${0.16 * assembly})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, radius * 0.89, radius * 0.78, 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      const projectedFaces = MODEL.faces.map((face) => {
+        const screen = face.points.map((point) => project(transformedPoint(point, face.group, assembly, explode)));
+        const depth = screen.reduce((total, point) => total + point.depth, 0) / screen.length;
+        return { ...face, screen, depth };
+      });
+      projectedFaces.sort((a, b) => b.depth - a.depth);
+
+      const materialFill: Record<Material, [number, number]> = {
+        shell: [0.21, 0.085], glass: [0.16, 0.045], roof: [0.26, 0.11], slab: [0.18, 0.07], core: [0.19, 0.07],
+      };
+
+      for (const face of projectedFaces) {
+        const [nearAlpha, farAlpha] = materialFill[face.material];
+        const alpha = (nearAlpha + (face.depth + 1) * 0.026) * assembly;
+        const gradient = ctx.createLinearGradient(
+          face.screen[0].x, face.screen[0].y,
+          face.screen[face.screen.length - 1].x, face.screen[face.screen.length - 1].y,
+        );
+        gradient.addColorStop(0, face.material === "roof"
+          ? `rgba(${AMBER}, ${Math.max(farAlpha, alpha * 0.42)})`
+          : `rgba(${CYAN_HOT}, ${Math.max(farAlpha, alpha)})`);
+        gradient.addColorStop(1, face.material === "glass"
+          ? `rgba(${CYAN}, ${Math.max(0.025, alpha * 0.23)})`
+          : `rgba(2, 25, 34, ${Math.max(0.25, alpha * 1.9)})`);
+
+        ctx.beginPath();
+        ctx.moveTo(face.screen[0].x, face.screen[0].y);
+        for (let index = 1; index < face.screen.length; index += 1) ctx.lineTo(face.screen[index].x, face.screen[index].y);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        if (face.material === "glass" && face.screen.length === 4) {
+          ctx.save();
+          ctx.clip();
+          ctx.lineWidth = 0.55;
+          ctx.strokeStyle = `rgba(${CYAN_HOT}, ${0.18 * assembly})`;
+          for (let step = 1; step < 5; step += 1) {
+            const t = step / 5;
+            const left = { x: face.screen[0].x + (face.screen[3].x - face.screen[0].x) * t, y: face.screen[0].y + (face.screen[3].y - face.screen[0].y) * t };
+            const right = { x: face.screen[1].x + (face.screen[2].x - face.screen[1].x) * t, y: face.screen[1].y + (face.screen[2].y - face.screen[1].y) * t };
+            ctx.beginPath(); ctx.moveTo(left.x, left.y); ctx.lineTo(right.x, right.y); ctx.stroke();
+          }
+          ctx.restore();
+        }
+      }
+
+      // Crisp primary members over translucent massing.
+      ctx.save();
+      ctx.lineJoin = "round";
+      for (const edge of MODEL.edges) {
+        const a = project(transformedPoint(edge.a, edge.group, assembly, explode));
+        const b = project(transformedPoint(edge.b, edge.group, assembly, explode));
+        const depth = (a.depth + b.depth) / 2;
+        const depthAlpha = clamp(0.48 - depth * 0.15, 0.16, 0.62);
+        ctx.strokeStyle = `rgba(${edge.group === 4 ? AMBER : CYAN_HOT}, ${depthAlpha * assembly})`;
+        ctx.lineWidth = (edge.strength ?? 1) * (depth < 0 ? 1.05 : 0.72);
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+      ctx.restore();
+
+      // Laser section plane.
+      const scanCycle = reduceMotion ? 0.58 : (Math.sin(time * 0.72) + 1) / 2;
+      const scanModelX = -1.12 + scanCycle * 2.24;
+      const scanTop = project({ x: scanModelX, y: 0.78, z: 0 });
+      const scanBottom = project({ x: scanModelX, y: -0.6, z: 0 });
+      const scanGradient = ctx.createLinearGradient(scanTop.x - 22, 0, scanTop.x + 22, 0);
+      scanGradient.addColorStop(0, "rgba(22, 200, 244, 0)");
+      scanGradient.addColorStop(0.5, `rgba(${CYAN_HOT}, ${0.16 * assembly})`);
+      scanGradient.addColorStop(1, "rgba(22, 200, 244, 0)");
+      ctx.fillStyle = scanGradient;
+      ctx.fillRect(scanTop.x - 26, Math.min(scanTop.y, scanBottom.y) - 15, 52, Math.abs(scanBottom.y - scanTop.y) + 30);
+      ctx.strokeStyle = `rgba(${CYAN_HOT}, ${0.72 * assembly})`;
+      ctx.lineWidth = 0.85;
+      ctx.beginPath(); ctx.moveTo(scanTop.x, scanTop.y); ctx.lineTo(scanBottom.x, scanBottom.y); ctx.stroke();
+
+      // Sparse survey returns define the scanned volume.
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      for (let surveyIndex = 0; surveyIndex < SURVEY_POINTS.length; surveyIndex += isCompact ? 2 : 1) {
+        const survey = SURVEY_POINTS[surveyIndex];
+        const drift = reduceMotion ? 0 : Math.sin(time * 0.48 + survey.phase) * 0.012;
+        const point = project({ x: survey.point.x + drift, y: survey.point.y + drift * 0.45, z: survey.point.z });
+        const proximity = 1 - clamp(Math.abs(survey.point.x - scanModelX) / 0.34);
+        const opacity = (0.08 + proximity * 0.63) * assembly;
+        const color = survey.tone > 0.93 ? AMBER : survey.tone > 0.84 ? CYAN_HOT : CYAN;
+        const size = 0.45 + proximity * 1.25;
+        ctx.fillStyle = `rgba(${color}, ${opacity})`;
+        ctx.fillRect(point.x - size / 2, point.y - size / 2, size, size);
+      }
+      ctx.restore();
+
+      // Geometry-locked technical callouts.
+      const callouts = isCompact ? [] : [
+        { anchor: { x: -0.68, y: 0.42, z: 0.08 }, dx: -74, dy: -34, label: "ROOF // CLASSIFIED" },
+        { anchor: { x: 0.78, y: 0.04, z: -0.38 }, dx: 46, dy: -24, label: "FACADE // SEGMENTED" },
+        { anchor: { x: 0.12, y: -0.49, z: 0.42 }, dx: 54, dy: 46, label: "LEVEL 01 // RESOLVED" },
+      ];
+      ctx.font = `500 8px ${monoFont}`;
+      ctx.textBaseline = "middle";
+      for (const callout of callouts) {
+        const anchor = project(callout.anchor);
+        const endX = anchor.x + callout.dx;
+        const endY = anchor.y + callout.dy;
+        ctx.strokeStyle = `rgba(${CYAN_HOT}, ${0.34 * assembly})`;
+        ctx.fillStyle = `rgba(${INK}, ${0.7 * assembly})`;
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.moveTo(anchor.x, anchor.y); ctx.lineTo(endX, endY); ctx.lineTo(endX + (callout.dx < 0 ? -18 : 18), endY); ctx.stroke();
+        ctx.beginPath(); ctx.arc(anchor.x, anchor.y, 2.1, 0, Math.PI * 2); ctx.fill();
+        const textX = callout.dx < 0 ? endX - 21 - ctx.measureText(callout.label).width : endX + 21;
+        ctx.fillText(callout.label, textX, endY - 6);
+      }
+
+      // Calibration ticks frame the object.
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      for (let tick = 0; tick < 36; tick += 3) {
+        const angle = (tick / 36) * Math.PI * 2;
+        const inner = radius * 1.13;
+        const outer = inner + (tick % 9 === 0 ? 9 : 5);
+        ctx.strokeStyle = `rgba(${tick % 9 === 0 ? AMBER : CYAN}, ${0.26 * assembly})`;
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * inner, Math.sin(angle) * inner * 0.62);
+        ctx.lineTo(Math.cos(angle) * outer, Math.sin(angle) * outer * 0.62);
+        ctx.stroke();
+      }
+      ctx.restore();
     };
 
     raf = requestAnimationFrame(draw);
-
     return () => {
       cancelAnimationFrame(raf);
-      ro.disconnect();
-      window.removeEventListener("pointermove", onPointer);
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       unsubscribe();
+      wrap.removeEventListener("pointermove", onPointerMove);
+      wrap.removeEventListener("pointerleave", onPointerLeave);
     };
   }, [reduceMotion, scrollYProgress]);
 
   return (
     <div ref={wrapRef} className="hud-hero-stage">
+      <div className="hud-twin-frame" aria-hidden="true"><span /><span /><span /><span /></div>
       <canvas
         ref={canvasRef}
         className="hud-constellation"
         role="img"
-        aria-label="An animated particle field that assembles into a three-dimensional wireframe house, flattens into a roof plan, and resolves into a data matrix"
+        aria-label="A futuristic construction digital twin: translucent architectural volumes assemble, separate into model layers, and are measured by a moving survey scan"
       />
-      <div className="hud-stage-readout pos-tl">
-        <small>Survey mode</small>
-        <strong>Physical &rarr; Digital</strong>
+      <div className="hud-stage-readout pos-tl"><small>Digital twin</small><strong>Geometry resolving</strong></div>
+      <div className="hud-stage-readout pos-br"><small>Model state</small><strong>Survey calibrated</strong></div>
+      <div className="hud-twin-legend" aria-hidden="true">
+        <span><i className="cyan" />Structure</span>
+        <span><i className="amber" />Roof plane</span>
+        <span><i className="glass" />Envelope</span>
       </div>
-      <div className="hud-stage-readout pos-br">
-        <small>Point cloud</small>
-        <strong>Scale verified</strong>
-      </div>
+      <div className="hud-twin-status" aria-hidden="true"><span>01</span><i /><strong>PHYSICAL CAPTURE</strong><i /><span>04</span></div>
     </div>
   );
 }

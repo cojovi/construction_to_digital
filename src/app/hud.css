@@ -634,6 +634,20 @@ body.hud-body *::selection {
   position: relative;
   aspect-ratio: 1 / 1;
   min-width: 0;
+  isolation: isolate;
+  contain: layout paint;
+}
+
+.hud-hero-stage::before {
+  position: absolute;
+  z-index: -1;
+  inset: 8%;
+  background:
+    radial-gradient(circle at 52% 48%, rgba(22, 200, 244, 0.09), transparent 48%),
+    linear-gradient(135deg, rgba(22, 200, 244, 0.025), transparent 45%);
+  content: "";
+  filter: blur(24px);
+  pointer-events: none;
 }
 
 .hud-hero-scroll {
@@ -695,6 +709,112 @@ body.hud-body *::selection {
 
 .hud-stage-readout.pos-tl { top: 6%; left: 2%; }
 .hud-stage-readout.pos-br { right: 2%; bottom: 8%; text-align: left; }
+
+.hud-twin-frame {
+  position: absolute;
+  z-index: 3;
+  inset: 7%;
+  pointer-events: none;
+}
+
+.hud-twin-frame::before,
+.hud-twin-frame::after {
+  position: absolute;
+  content: "";
+  opacity: 0.28;
+}
+
+.hud-twin-frame::before {
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 20px;
+  background: linear-gradient(var(--hud-cyan), transparent);
+}
+
+.hud-twin-frame::after {
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  height: 20px;
+  background: linear-gradient(transparent, var(--hud-cyan));
+}
+
+.hud-twin-frame span {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-color: rgba(133, 240, 255, 0.22);
+  border-style: solid;
+}
+
+.hud-twin-frame span:nth-child(1) { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.hud-twin-frame span:nth-child(2) { top: 0; right: 0; border-width: 1px 1px 0 0; }
+.hud-twin-frame span:nth-child(3) { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
+.hud-twin-frame span:nth-child(4) { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+
+.hud-twin-legend {
+  position: absolute;
+  z-index: 4;
+  right: 10%;
+  bottom: 3%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--hud-quiet);
+  font-family: var(--hud-mono);
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.hud-twin-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-twin-legend i {
+  width: 5px;
+  height: 5px;
+  border: 1px solid currentColor;
+  font-style: normal;
+  transform: rotate(45deg);
+}
+
+.hud-twin-legend .cyan { color: var(--hud-cyan-hot); }
+.hud-twin-legend .amber { color: var(--hud-amber); }
+.hud-twin-legend .glass { border-color: rgba(133, 240, 255, 0.42); background: rgba(22, 200, 244, 0.15); }
+
+.hud-twin-status {
+  position: absolute;
+  z-index: 4;
+  top: 1.5%;
+  right: 13%;
+  left: 13%;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  color: var(--hud-quiet);
+  font-family: var(--hud-mono);
+  font-size: 7.5px;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+}
+
+.hud-twin-status strong {
+  color: var(--hud-muted);
+  font-size: inherit;
+  font-weight: 500;
+  text-align: center;
+}
+
+.hud-twin-status i {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(22, 200, 244, 0.3), transparent);
+}
 
 /* ============================================================================
    TELEMETRY MARQUEE
@@ -1889,6 +2009,8 @@ body.hud-body *::selection {
   .hud-step > p { grid-column: 1; }
   .hud-rail-nodes { grid-template-columns: minmax(0, 1fr); }
   .hud-stage-readout { display: none; }
+  .hud-twin-legend,
+  .hud-twin-status { display: none; }
   .hud-frame { display: none; }
 }
 
