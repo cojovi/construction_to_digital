@@ -53,6 +53,9 @@ export function HudFooter() {
                 {item.label}
               </Link>
             ))}
+            <Link href="/contact">Contact</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/agents">For agents</Link>
           </div>
         </div>
       </div>

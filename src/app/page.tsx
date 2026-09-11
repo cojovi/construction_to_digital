@@ -343,6 +343,7 @@ export default function Home() {
           SYSTEM CONSOLE
           ================================================================== */}
       <section className="hud-section" id="systems">
+        <span id="solutions" aria-hidden="true" />
         <div className="hud-shell">
           <Lift>
             <div className="hud-index-rail">

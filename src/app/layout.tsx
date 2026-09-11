@@ -112,6 +112,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         logo: `${siteConfig.url}/brand/construction-to-digital-logo.png`,
         description: siteConfig.description,
         areaServed: "United States",
+        email: siteConfig.contactEmail,
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "sales and demo inquiries",
+          email: siteConfig.contactEmail,
+          url: `${siteConfig.url}/contact`,
+          availableLanguage: "en",
+        },
+        address: {
+          "@type": "PostalAddress",
+          ...siteConfig.location,
+        },
         knowsAbout: [
           "Construction workflow automation",
           "Artificial intelligence agents",

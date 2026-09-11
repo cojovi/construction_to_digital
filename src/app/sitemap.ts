@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { solutions } from "@/lib/solutions";
 import { siteConfig } from "@/lib/site";
+import { informationPages } from "@/lib/information-pages";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -21,6 +22,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ...(solution.image
         ? { images: [`${siteConfig.url}${solution.image}`] }
         : {}),
+    })),
+    ...informationPages.map((page) => ({
+      url: `${siteConfig.url}/${page.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
     })),
   ];
 }

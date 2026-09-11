@@ -1918,6 +1918,56 @@ body.hud-body *::selection {
 
 .hud-footer-cols a:hover { color: var(--hud-cyan-hot); transform: translateX(4px); }
 
+/* Public information uses the same instrument typography and quiet rules. */
+.hud-document { padding-block: calc(var(--hud-bar) + 90px) 100px; }
+.hud-document-header { max-width: 850px; margin-bottom: 64px; }
+.hud-document-header h1 {
+  margin: 22px 0 28px;
+  font-family: var(--hud-display);
+  font-size: clamp(2.8rem, 6vw, 6rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.hud-document-header .hud-copy { max-width: 65ch; margin-bottom: 26px; }
+.hud-document-sections { max-width: 960px; margin-bottom: 52px; }
+.hud-document-sections section {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 24px;
+  padding-block: 38px;
+  border-top: 1px solid var(--hud-rule-live);
+}
+.hud-document-index { padding-top: 6px; color: var(--hud-cyan); }
+.hud-document-sections h2 {
+  margin: 0 0 24px;
+  font-family: var(--hud-display);
+  font-size: clamp(1.5rem, 2.3vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.hud-document-sections p,
+.hud-document-sections li {
+  max-width: 72ch;
+  color: var(--hud-muted);
+  font-size: 0.95rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.hud-document-sections p { margin: 0 0 20px; }
+.hud-document-sections ul { list-style: disc; padding-left: 20px; margin: 24px 0; }
+.hud-document-sections li { margin-block: 10px; }
+.hud-document-sections .hud-document-links { list-style: none; padding-left: 0; }
+.hud-document-links a,
+.not-found-recovery a { color: var(--hud-cyan-hot); text-decoration: underline; text-underline-offset: 5px; }
+.hud-document-links a { display: inline-block; padding-block: 6px; }
+.not-found-recovery { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
+@media (max-width: 640px) {
+  .hud-document { padding-top: calc(var(--hud-bar) + 54px); }
+  .hud-document-sections section { grid-template-columns: 26px minmax(0, 1fr); gap: 14px; }
+}
+
 .hud-footer-bottom {
   display: flex;
   flex-wrap: wrap;

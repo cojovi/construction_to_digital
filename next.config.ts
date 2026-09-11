@@ -19,6 +19,8 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
+  // Preserve Flight headers so document negotiation can leave RSC requests alone.
+  skipProxyUrlNormalize: true,
   images: {
     formats: ["image/avif", "image/webp"],
     localPatterns: [

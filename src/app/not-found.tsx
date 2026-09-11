@@ -16,6 +16,11 @@ export default function NotFound() {
           <ArrowLeftIcon size={18} weight="bold" aria-hidden="true" />
           Return home
         </Link>
+        <nav className="not-found-recovery" aria-label="Find a published page">
+          <Link href="/contact">Contact</Link>
+          <a href="/sitemap.xml">Sitemap</a>
+          <a href="/llms.txt">Agent content index</a>
+        </nav>
       </div>
     </main>
   );

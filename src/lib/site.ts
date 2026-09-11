@@ -4,6 +4,11 @@ export const siteConfig = {
   domain: "constructiontodigital.com",
   url: "https://constructiontodigital.com",
   contactEmail: "jarvisstone@agentmail.to",
+  location: {
+    addressLocality: "Fort Worth",
+    addressRegion: "TX",
+    addressCountry: "US",
+  },
   description:
     "Construction workflow software and custom AI agents for blueprint takeoffs, supplier pricing, contractor operations, and billing.",
   tagline: "Physical work. Digital leverage.",
@@ -15,7 +20,7 @@ export const navigation = [
   { label: "Solutions", href: "/#solutions" },
   { label: "How it works", href: "/#approach" },
   { label: "Build process", href: "/#process" },
-  { label: "About", href: "/#about" },
+  { label: "About", href: "/about" },
 ] as const;
 
 export const demoMailto = `mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(
