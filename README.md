@@ -57,7 +57,7 @@ No analytics scripts are emitted when the Google tag ID is unset.
 
 - `/solutions/drafting-table`
 - `/solutions/material-intelligence`
-- `/solutions/bolt-agent`
+- `/solutions/project-agent`
 - `/solutions/billing-agent`
 
 Add future products to `src/lib/solutions.ts`; the homepage portfolio, product route generation, related links, structured content, and sitemap derive from that shared data.
@@ -69,7 +69,7 @@ Add future products to `src/lib/solutions.ts`; the homepage portfolio, product r
 - `/llms.txt`: generated content index following the [llms.txt format](https://llmstxt.org/).
 - `Accept: text/markdown` on any public page: Markdown from the same product sources,
   with quality-value and media-range handling via `negotiator`.
-- `/index.md` and page siblings such as `/solutions/bolt-agent.md`: explicit
+- `/index.md` and page siblings such as `/solutions/project-agent.md`: explicit
   Markdown URLs that also work without a special Accept header.
 - Nonexistent documents: real 404 status; Markdown requests get a short recovery
   document with index, sitemap, and contact links. Unsupported document formats

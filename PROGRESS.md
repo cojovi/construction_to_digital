@@ -4,8 +4,8 @@
 **Canonical domain:** `https://constructiontodigital.com`  
 **Workspace:** `/Volumes/FastSSD/github/my repos/construction_to_digital`  
 **GitHub:** https://github.com/cojovi/construction_to_digital  
-**Progress snapshot:** 2026-08-24 22:45 CDT  
-**Current phase status:** Initial design, implementation, technical SEO, security hardening, local production verification, Git initialization, and GitHub push are complete.  
+**Progress snapshot:** 2026-09-17 21:57 CDT  
+**Current phase status:** Public product name BoltAgent is now ProjectAgent. Old `/solutions/bolt-agent` URLs redirect to `/solutions/project-agent`. ECi Bolt remains the job-system integration.  
 **Runtime status at handoff:** All task-related local servers and background development processes are stopped. Ports `3000` and `3100` have no listeners. The in-app preview was closed.
 
 ---
@@ -133,7 +133,7 @@ npm run check      # lint + typecheck + production build
 | `/` | Primary marketing homepage | Static |
 | `/solutions/drafting-table` | Drafting Table product landing page | Static generation |
 | `/solutions/material-intelligence` | Material Intelligence landing page | Static generation |
-| `/solutions/bolt-agent` | BoltAgent landing page | Static generation |
+| `/solutions/project-agent` | ProjectAgent landing page | Static generation |
 | `/solutions/billing-agent` | BillingAgent landing page | Static generation |
 | `/_not-found` | Custom not-found output used by Next | Static |
 
@@ -348,9 +348,10 @@ Important truth boundaries:
 - NetSuite language is “NetSuite-ready,” not a completed live synchronization claim.
 - No invented margin savings or price-alert metrics.
 
-### 6.3 BoltAgent
+### 6.3 ProjectAgent
 
-**Route:** `/solutions/bolt-agent`  
+**Route:** `/solutions/project-agent`  
+**Former public name:** BoltAgent (`/solutions/bolt-agent` permanently redirects here)  
 **Current status:** Deployed workflow  
 **Primary public scope:** Conversational access to live ECi Bolt work orders, stages, crew assignments, scheduling gaps, and follow-up context.
 
@@ -1139,7 +1140,7 @@ The current Next.js foundation can support future features without rebuilding th
 
 #### Interactive product demos
 
-- sandboxed BoltAgent query examples
+- sandboxed ProjectAgent query examples
 - sample billing question workflows
 - supplier CSV normalization demo with synthetic data
 - blueprint takeoff review demonstration with a pre-approved sample plan

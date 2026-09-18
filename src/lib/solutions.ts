@@ -110,9 +110,9 @@ export const solutions: readonly Solution[] = [
       "Normalize roofing supplier price lists, compare material pricing over time, and prepare auditable construction cost data for estimating, purchasing, job costing, and ERP import.",
   },
   {
-    slug: "bolt-agent",
-    name: "BoltAgent",
-    shortName: "BoltAgent",
+    slug: "project-agent",
+    name: "ProjectAgent",
+    shortName: "ProjectAgent",
     category: "Contractor operations agent",
     status: "Deployed workflow",
     icon: "operations",
@@ -121,7 +121,7 @@ export const solutions: readonly Solution[] = [
     summary:
       "A specialist AI agent that queries contractor job-management data for work-order status, crew assignments, scheduling gaps, and stale builder jobs.",
     detail:
-      "BoltAgent provides a conversational layer over ECi Bolt. Office and field teams can look up a work order, see its current stage, surface unscheduled work, add controlled notes, and prepare follow-up without navigating multiple screens.",
+      "ProjectAgent provides a conversational layer over ECi Bolt. Office and field teams can look up a work order, see its current stage, surface unscheduled work, add controlled notes, and prepare follow-up without navigating multiple screens.",
     proof:
       "Deployed against a real contractor scheduling workflow with live API lookup as a core rule.",
     capabilities: [
@@ -147,7 +147,7 @@ export const solutions: readonly Solution[] = [
     ],
     seoTitle: "AI Contractor Scheduling and Work Order Agent",
     seoDescription:
-      "BoltAgent gives contractors conversational access to live work orders, job status, crews, scheduling gaps, and builder follow-up workflows through ECi Bolt.",
+      "ProjectAgent gives contractors conversational access to live work orders, job status, crews, scheduling gaps, and builder follow-up workflows through ECi Bolt.",
   },
   {
     slug: "billing-agent",

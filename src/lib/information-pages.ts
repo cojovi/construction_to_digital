@@ -143,7 +143,7 @@ export const informationPages: InformationPage[] = [
       {
         title: "How to read the content.",
         paragraphs: [
-          "Start with /llms.txt for the content index. Request a public page with Accept: text/markdown to receive its Markdown representation. You can also read /index.md for the homepage or append .md to a page path, for example /solutions/bolt-agent.md. These are read-only GET endpoints; HEAD returns the same status and headers without a body.",
+          "Start with /llms.txt for the content index. Request a public page with Accept: text/markdown to receive its Markdown representation. You can also read /index.md for the homepage or append .md to a page path, for example /solutions/project-agent.md. These are read-only GET endpoints; HEAD returns the same status and headers without a body.",
           "The sitemap lists canonical public pages. A missing document returns HTTP 404 with recovery links when Markdown is requested. If a requested representation is unavailable, HTTP 406 describes the supported formats. Do not treat an error page as a product page.",
         ],
         links: [

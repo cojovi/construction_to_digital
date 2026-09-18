@@ -28,6 +28,20 @@ const nextConfig: NextConfig = {
       { pathname: "/images/**", search: "" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/solutions/bolt-agent",
+        destination: "/solutions/project-agent",
+        permanent: true,
+      },
+      {
+        source: "/solutions/bolt-agent.md",
+        destination: "/solutions/project-agent.md",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

@@ -3,8 +3,31 @@ import { appendVary, negotiateDocument } from "@/lib/content-negotiation";
 import { getMarkdown, markdownPath, notFoundMarkdown } from "@/lib/markdown";
 import { siteConfig } from "@/lib/site";
 
+const retiredDocuments = {
+  "/solutions/bolt-agent": "/solutions/project-agent",
+} as const;
+
+function retiredDestination(path: string) {
+  if (path in retiredDocuments) {
+    return retiredDocuments[path as keyof typeof retiredDocuments];
+  }
+  if (path.endsWith(".md")) {
+    const base = path.slice(0, -3);
+    if (base in retiredDocuments) {
+      return `${retiredDocuments[base as keyof typeof retiredDocuments]}.md`;
+    }
+  }
+  return null;
+}
+
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  const renamed = retiredDestination(path);
+  if (renamed) {
+    const url = request.nextUrl.clone();
+    url.pathname = renamed;
+    return NextResponse.redirect(url, 308);
+  }
   const explicitMarkdown = path.endsWith(".md");
 
   // Files and framework internals retain their native representations. Unknown

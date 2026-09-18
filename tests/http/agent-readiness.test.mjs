@@ -7,7 +7,7 @@ import { setTimeout as delay } from "node:timers/promises";
 let baseUrl = process.env.C2D_TEST_URL;
 let server;
 let serverLog = "";
-const pages = ["/", "/solutions/drafting-table", "/solutions/material-intelligence", "/solutions/bolt-agent", "/solutions/billing-agent", "/about", "/contact", "/privacy", "/agents"];
+const pages = ["/", "/solutions/drafting-table", "/solutions/material-intelligence", "/solutions/project-agent", "/solutions/billing-agent", "/about", "/contact", "/privacy", "/agents"];
 const mdPath = (path) => path === "/" ? "/index.md" : `${path}.md`;
 const request = (path, accept = "text/html", options = {}) => fetch(new URL(path, baseUrl), {
   ...options, headers: { Accept: accept, ...options.headers }, signal: AbortSignal.timeout(15_000),
