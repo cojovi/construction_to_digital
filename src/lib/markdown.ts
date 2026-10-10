@@ -1,6 +1,7 @@
 import { informationPages } from "@/lib/information-pages";
 import { siteConfig } from "@/lib/site";
 import { solutions } from "@/lib/solutions";
+import { productDetails } from "@/lib/product-details";
 
 const absolute = (href: string) => href.startsWith("/") ? `${siteConfig.url}${href}` : href;
 const link = (label: string, href: string) => `[${label}](${absolute(href)})`;
@@ -18,11 +19,11 @@ const documents = new Map<string, string>([
     "Construction to Digital builds practical AI systems around the handoffs that cost contractors time: plans, materials, jobs, and billing. Human review is part of each workflow.",
     "## Solutions",
     ...solutions.map((solution) => [
-      `### ${link(solution.name, `/solutions/${solution.slug}`)}`,
+      `### ${link(solution.name, solution.href)}`,
       `Status: ${solution.status}. Category: ${solution.category}.`,
       solution.summary,
       solution.detail,
-      link("Read the workflow and safeguards", `/solutions/${solution.slug}.md`),
+      link("Read the workflow and safeguards", `${solution.href}.md`),
     ].join("\n\n")),
     "## How to get started",
     "Describe your current tools, the workflow you want to improve, and the output you need. Demo and implementation scope are discussed directly. This marketing website does not expose customer records or a public action API.",
@@ -35,11 +36,11 @@ const documents = new Map<string, string>([
     ]),
   ].join("\n\n")],
   ...solutions.map((solution): [string, string] => [
-    `/solutions/${solution.slug}`,
+    solution.href,
     [
       `# ${solution.name}`,
       `> ${solution.summary}`,
-      `Source: ${absolute(`/solutions/${solution.slug}`)}`,
+      `Source: ${absolute(solution.href)}`,
       `Status: ${solution.status}. Category: ${solution.category}.`,
       `## ${solution.headline}`,
       solution.detail,
@@ -49,6 +50,8 @@ const documents = new Map<string, string>([
       "## Integrations and formats", bullets(solution.integrations),
       "Integration access and implementation scope must be confirmed directly. A listed format or ERP-ready export is not an authorization or a promise of a live connection.",
       "## Safeguards", bullets(solution.safeguards),
+      "## Common questions",
+      ...(productDetails[solution.slug]?.questions.flatMap(({ question, answer }) => [`### ${question}`, answer]) ?? []),
       "## Next steps",
       `${link("Request a demo", "/contact")} to discuss your workflow. This site does not accept product API calls, customer files, or financial instructions.`,
       bullets([link("Agent guidance", "/agents.md"), link("All solutions", "/index.md")]),
@@ -95,7 +98,7 @@ export function getLlmsTxt() {
     `> ${siteConfig.description}`,
     "Use this site to evaluate construction workflow fit and prepare a demo inquiry. It is a public product-information site, not a customer-data API or MCP server. Product availability and integration scope must be confirmed directly. Consequential actions require human approval.",
     "## When to use",
-    bullets(solutions.map((solution) => `${link(solution.name, `/solutions/${solution.slug}.md`)}: ${solution.summary} Status: ${solution.status}.`)),
+    bullets(solutions.map((solution) => `${link(solution.name, `${solution.href}.md`)}: ${solution.summary} Status: ${solution.status}.`)),
     "## Agent instructions",
     bullets([
       `${link("When and how to use this site", "/agents.md")}: Reading endpoints, best-fit jobs, limitations, and approval boundaries.`,

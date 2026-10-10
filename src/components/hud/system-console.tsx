@@ -56,8 +56,14 @@ export function SystemConsole() {
     <div className="hud-console">
       <div className="hud-channels" role="tablist" aria-label="Construction to Digital systems">
         {solutions.map((solution, i) => (
-          <button
+          <div
             key={solution.slug}
+            className="hud-channel-row"
+            data-tool-theme={solution.theme}
+            data-active={i === index}
+            role="presentation"
+          >
+          <button
             id={`channel-${solution.slug}`}
             className="hud-channel"
             type="button"
@@ -101,8 +107,16 @@ export function SystemConsole() {
               <strong>{solution.shortName}</strong>
               <small>{solution.category}</small>
             </span>
-            <ArrowRightIcon className="hud-channel-arrow" size={16} aria-hidden="true" />
           </button>
+          <Link
+            className="hud-channel-open"
+            href={solution.href}
+            aria-label={`Open ${solution.shortName} page`}
+            title={`Open ${solution.shortName}`}
+          >
+            <ArrowRightIcon size={17} aria-hidden="true" />
+          </Link>
+          </div>
         ))}
       </div>
 
@@ -163,7 +177,7 @@ export function SystemConsole() {
             </motion.ul>
 
             <div className="hud-console-foot">
-              <Link className="hud-link" href={`/solutions/${active.slug}`}>
+              <Link className="hud-link" href={active.href}>
                 Open {active.shortName}
                 <ArrowRightIcon size={15} weight="bold" aria-hidden="true" />
               </Link>

@@ -16,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ],
     },
     ...solutions.map((solution) => ({
-      url: `${siteConfig.url}/solutions/${solution.slug}`,
+      url: `${siteConfig.url}${solution.href}`,
       changeFrequency: "monthly" as const,
       priority: 0.8,
       ...(solution.image

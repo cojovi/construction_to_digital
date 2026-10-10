@@ -133,7 +133,7 @@ export default function Home() {
     itemListElement: solutions.map((solution, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `${siteConfig.url}/solutions/${solution.slug}`,
+      url: `${siteConfig.url}${solution.href}`,
       name: solution.name,
       description: solution.summary,
     })),
@@ -304,32 +304,34 @@ export default function Home() {
 
             <Lift delay={0.1}>
               <div>
-                <p className="hud-eyebrow">01 / Blueprint to takeoff</p>
+                <p className="hud-eyebrow">01 / Autonomous AI blueprint measurement</p>
                 <h2 className="hud-h2">
-                  Make the plan set useful before it reaches the estimating queue.
+                  Your blueprints. Measured by autonomous AI.
                 </h2>
                 <p className="hud-copy">
-                  Upload residential blueprints, verify drawing scale, extract roof
-                  and elevation measurements, score confidence on every result, and
-                  produce a consistent takeoff ready for review and export.
+                  Give your AI estimating agent the residential blueprints. It
+                  extracts roofing and gutter measurements, counts components, and
+                  builds the takeoff. Pair it with Material Tracker to turn those
+                  quantities into a priced bid. We handle setup; your team runs the
+                  workflow and reviews the result.
                 </p>
 
                 <ul className="hud-checks">
                   <li>
                     <CheckIcon size={15} weight="bold" aria-hidden="true" />
-                    Scale verification before any measurement
+                    Autonomous roofing and gutter takeoffs from your plans
                   </li>
                   <li>
                     <CheckIcon size={15} weight="bold" aria-hidden="true" />
-                    Confidence attached to every extracted value
+                    Connected material pricing for complete bids
                   </li>
                   <li>
                     <CheckIcon size={15} weight="bold" aria-hidden="true" />
-                    Ambiguous scope surfaced, never guessed
+                    Verified scale and clear flags for anything needing review
                   </li>
                 </ul>
 
-                <Link className="hud-link" href="/solutions/drafting-table">
+                <Link className="hud-link" href="/draftingtable">
                   Open The Drafting Table
                   <ArrowRightIcon size={15} weight="bold" aria-hidden="true" />
                 </Link>
@@ -400,7 +402,7 @@ export default function Home() {
                   <p className="hud-holo-cat">{solution.category}</p>
                   <h3 className="hud-holo-name">{solution.shortName}</h3>
                   <p className="hud-holo-sum">{solution.summary}</p>
-                  <Link href={`/solutions/${solution.slug}`} className="hud-holo-foot">
+                  <Link href={solution.href} className="hud-holo-foot">
                     {solution.status}
                     <ArrowUpRightIcon size={14} weight="bold" aria-hidden="true" />
                   </Link>

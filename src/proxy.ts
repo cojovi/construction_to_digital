@@ -2,10 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { appendVary, negotiateDocument } from "@/lib/content-negotiation";
 import { getMarkdown, markdownPath, notFoundMarkdown } from "@/lib/markdown";
 import { siteConfig } from "@/lib/site";
+import { solutionRedirects } from "@/lib/solutions";
 
-const retiredDocuments = {
-  "/solutions/bolt-agent": "/solutions/project-agent",
-} as const;
+const retiredDocuments = solutionRedirects;
 
 function retiredDestination(path: string) {
   if (path in retiredDocuments) {

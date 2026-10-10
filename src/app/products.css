@@ -1,0 +1,209 @@
+/* Product palettes come from the supplied color atlases. Use the same theme
+   names in solutions.ts for future pages. Homepage tokens remain unchanged. */
+[data-tool-theme="cyan"], body:has(.product-page[data-product-theme="cyan"]) {
+  --product-accent: #17c8f4;
+  --product-highlight: #85f0ff;
+  --product-carbon: #020506;
+  --product-panel: #0b171c;
+  --product-raised: #102127;
+  --product-rule: #1b3039;
+  --product-ink: #f4fafc;
+  --product-body: #c7d3d8;
+  --product-muted: #849ba6;
+}
+[data-tool-theme="amber"], body:has(.product-page[data-product-theme="amber"]) {
+  --product-accent: #fbb224;
+  --product-highlight: #ffd583;
+  --product-carbon: #080603;
+  --product-panel: #19150c;
+  --product-raised: #262011;
+  --product-rule: #3b2b0c;
+  --product-ink: #faf6ed;
+  --product-body: #d8d1c4;
+  --product-muted: #ad9e85;
+}
+[data-tool-theme="red"], body:has(.product-page[data-product-theme="red"]) {
+  --product-accent: #ed2c29;
+  --product-highlight: #ff8c88;
+  --product-carbon: #050304;
+  --product-panel: #1a1011;
+  --product-raised: #241617;
+  --product-rule: #3a2628;
+  --product-ink: #f6f2f1;
+  --product-body: #d8d1d0;
+  --product-muted: #b5a5a8;
+}
+[data-tool-theme="green"], body:has(.product-page[data-product-theme="green"]) {
+  --product-accent: #39ff6a;
+  --product-highlight: #a1ffba;
+  --product-carbon: #030706;
+  --product-panel: #101a15;
+  --product-raised: #17261f;
+  --product-rule: #2a3c33;
+  --product-ink: #f3faf6;
+  --product-body: #d7e1db;
+  --product-muted: #97a89e;
+}
+
+body:has(.product-page) {
+  --hud-void: var(--product-carbon);
+  --hud-carbon: var(--product-carbon);
+  --hud-plate: var(--product-panel);
+  --hud-ink: var(--product-ink);
+  --hud-muted: var(--product-body);
+  --hud-quiet: var(--product-muted);
+  --hud-cyan: var(--product-accent);
+  --hud-cyan-hot: var(--product-highlight);
+  --hud-cyan-veil: color-mix(in srgb, var(--product-accent) 10%, transparent);
+  --hud-rule: var(--product-rule);
+  --hud-rule-live: color-mix(in srgb, var(--product-accent) 36%, transparent);
+  --cyan-strong: var(--product-highlight);
+}
+body:has(.product-page) .hud-atmos-glow {
+  background: radial-gradient(ellipse 60% 44% at 78% 6%, color-mix(in srgb, var(--product-accent) 7%, transparent), transparent 68%);
+}
+body:has(.product-page) .hud-header {
+  background: color-mix(in srgb, var(--product-carbon) 90%, transparent);
+}
+body:has(.product-page) .hud-btn { color: var(--product-carbon); }
+body:has(.product-page) .hud-btn:hover { background: var(--product-highlight); }
+
+/* Only the boxed tool selector gets individual product colors on the home page.
+   The preview panel, portfolio, header, and page background keep their cyan. */
+.hud-channel-row {
+  --hud-cyan: var(--product-accent);
+  --hud-rule-live: color-mix(in srgb, var(--product-accent) 36%, transparent);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px;
+  background: var(--hud-void);
+}
+.hud-channel-row .hud-channel {
+  width: 100%;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  padding-right: 8px;
+  background: transparent;
+}
+.hud-channel-row[data-active="true"], .hud-channel-row:hover {
+  background: color-mix(in srgb, var(--product-accent) 7%, #000);
+}
+.hud-channel-row .hud-channel-live { background: var(--product-accent); box-shadow: 0 0 18px color-mix(in srgb, var(--product-accent) 45%, transparent); }
+.hud-channel-row .hud-channel-icon { color: var(--product-accent); border-color: color-mix(in srgb, var(--product-accent) 35%, transparent); }
+.hud-channel-row .hud-channel-num { color: var(--product-highlight); }
+.hud-channel-row .hud-channel[data-active="true"] .hud-channel-icon { background: color-mix(in srgb, var(--product-accent) 12%, transparent); }
+.hud-channel-row .hud-channel-copy small { color: var(--product-muted); }
+.hud-channel-row .hud-channel-copy strong { color: var(--product-ink); }
+.hud-channel-open {
+  display: grid;
+  min-height: 48px;
+  place-items: center;
+  color: var(--product-accent);
+}
+.hud-channel-open:hover { background: color-mix(in srgb, var(--product-accent) 12%, transparent); }
+.hud-channel-row :focus-visible { outline-color: var(--product-highlight); outline-offset: -4px; }
+
+.product-page .hud-eyebrow { color: var(--product-highlight); }
+.product-page .hud-copy { color: var(--product-body); }
+.product-accent { color: var(--product-highlight); }
+.product-hero { padding-block: 48px 0; }
+.product-breadcrumb { display: flex; flex-wrap: wrap; gap: 15px; color: var(--product-muted); margin-bottom: 46px; }
+.product-breadcrumb a:hover { color: var(--product-highlight); }
+.product-identity { display: flex; align-items: center; gap: 13px; padding-bottom: 26px; border-bottom: 1px solid var(--product-rule); margin-bottom: 48px; font-family: var(--hud-display); font-size: 19px; }
+.product-symbol { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--hud-rule-live); color: var(--product-accent); }
+.product-system-code { margin-left: auto; color: var(--product-muted); }
+.product-hero-grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: clamp(36px, 6vw, 100px); align-items: center; }
+.product-hero h1 { margin: 0 0 28px; font-family: var(--hud-display); font-size: clamp(3.4rem, 5.7vw, 6.4rem); font-weight: 460; line-height: .99; letter-spacing: -.05em; max-width: 14ch; text-wrap: balance; }
+.product-intro { max-width: 58ch; margin-bottom: 0; font-size: clamp(1rem, 1.15vw, 1.15rem); font-weight: 300; line-height: 1.8; color: var(--product-body); }
+.product-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
+.product-actions .hud-btn { max-width: 100%; white-space: normal; line-height: 1.5; }
+.product-audience { color: var(--product-muted); margin: 26px 0 0; letter-spacing: .12em; }
+.product-sequence { position: relative; padding: clamp(22px, 2.8vw, 42px); border: 1px solid var(--product-rule); border-top: 2px solid var(--product-accent); background: linear-gradient(135deg, color-mix(in srgb, var(--product-accent) 4%, transparent), transparent 60%), var(--product-panel); }
+.product-sequence-head { display: flex; justify-content: space-between; gap: 12px; color: var(--product-muted); font-size: 9px; letter-spacing: .12em; }
+.product-sequence h2 { margin: 32px 0; max-width: 17ch; font-family: var(--hud-display); font-size: clamp(1.7rem, 2.5vw, 2.6rem); font-weight: 440; letter-spacing: -.035em; line-height: 1.1; }
+.product-sequence ol { list-style: none; margin: 0; padding: 0; }
+.product-sequence li { position: relative; display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 16px; padding-bottom: 30px; }
+.product-step-number { display: grid; align-items: center; justify-items: center; width: 35px; height: 35px; border: 1px solid var(--hud-rule-live); color: var(--product-highlight); background: var(--product-raised); }
+.product-sequence li:not(:last-child)::after { content: ""; position: absolute; width: 1px; left: 17px; top: 42px; bottom: 7px; background: var(--product-rule); }
+.product-sequence h3 { font-family: var(--hud-display); font-size: 17px; letter-spacing: -.015em; margin: 2px 0 7px; line-height: 1.3; }
+.product-sequence li p { font-size: 13px; line-height: 1.7; color: var(--product-body); margin: 0; }
+.product-sequence-foot { display: flex; align-items: center; gap: 10px; padding-top: 18px; border-top: 1px solid var(--product-rule); color: var(--product-muted); font-size: 9px; letter-spacing: .06em; }
+.product-dot { width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: var(--product-accent); }
+.product-connectors { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 30px; margin-top: 60px; border-block: 1px solid var(--product-rule); padding: 24px 0; color: var(--product-body); font-size: 12px; }
+.product-connectors > .hud-mono { color: var(--product-highlight); margin-right: 16px; }
+.product-section { padding-block: clamp(72px, 8vw, 126px); }
+.product-section + .product-section { border-top: 1px solid var(--product-rule); }
+.product-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+.product-benefits article { padding: 0 clamp(22px, 3vw, 48px); border-left: 1px solid var(--product-rule); }
+.product-benefits article:first-child { padding-left: 0; border: 0; }
+.product-benefits article:last-child { padding-right: 0; }
+.product-benefit-index { display: block; margin-bottom: 30px; color: var(--product-highlight); }
+.product-benefits h2 { font-family: var(--hud-display); font-size: clamp(1.5rem, 2.3vw, 2.3rem); line-height: 1.12; font-weight: 450; letter-spacing: -.035em; margin-bottom: 20px; text-wrap: pretty; }
+.product-benefits p, .product-companion p, .product-review p { margin: 0; color: var(--product-body); font-size: 14px; line-height: 1.85; }
+.product-workflow-grid, .product-scope-grid, .product-faq-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(40px, 8vw, 128px); }
+.product-workflow { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--product-rule); }
+.product-workflow li { display: grid; grid-template-columns: 30px minmax(0, 1fr) 18px; gap: 18px; align-items: center; padding: 24px 0; border-bottom: 1px solid var(--product-rule); }
+.product-workflow li > span, .product-workflow li > svg { color: var(--product-highlight); }
+.product-workflow h3 { font-family: var(--hud-body); font-size: 16px; font-weight: 400; line-height: 1.6; letter-spacing: 0; margin: 0; text-wrap: pretty; }
+.product-capabilities { list-style: none; margin: 28px 0 0; padding: 0; }
+.product-capabilities li { display: flex; gap: 15px; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--product-rule); font-size: 14px; }
+.product-capabilities svg { color: var(--product-accent); flex-shrink: 0; }
+.product-review { padding: clamp(24px, 3vw, 46px); background: var(--product-panel); border: 1px solid var(--product-rule); align-self: start; }
+.product-review > span { color: var(--product-highlight); }
+.product-review h3 { font-family: var(--hud-display); font-size: clamp(1.6rem, 2.5vw, 2.5rem); font-weight: 450; line-height: 1.15; margin: 24px 0; }
+.product-review ul { padding-left: 18px; color: var(--product-body); font-size: 14px; line-height: 1.7; margin-bottom: 26px; }
+.product-review li { margin-bottom: 14px; padding-left: 5px; }
+.product-review li::marker { color: var(--product-accent); }
+.product-companion-section { background: color-mix(in srgb, var(--product-panel) 55%, transparent); }
+.product-companion { display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: 36px; align-items: center; }
+.product-companion-icon { color: var(--product-accent); }
+.product-companion h2 { font-family: var(--hud-display); font-size: clamp(1.7rem, 2.7vw, 2.8rem); font-weight: 450; line-height: 1.1; letter-spacing: -.025em; max-width: 27ch; margin: 16px 0; }
+.product-companion p { max-width: 62ch; }
+.product-companion .hud-eyebrow { margin-bottom: 0; }
+.product-companion .hud-link { white-space: nowrap; }
+.product-faq details { border-top: 1px solid var(--product-rule); }
+.product-faq details:last-child { border-bottom: 1px solid var(--product-rule); }
+.product-faq summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 25px 0; cursor: pointer; list-style: none; font-size: 16px; font-weight: 400; line-height: 1.6; }
+.product-faq summary::-webkit-details-marker { display: none; }
+.product-faq summary svg { flex-shrink: 0; color: var(--product-accent); transition: transform .2s ease; }
+.product-faq details[open] summary svg { transform: rotate(45deg); }
+.product-faq details p { margin: 0; padding: 0 35px 26px 0; color: var(--product-body); font-size: 14px; line-height: 1.85; }
+.product-final h2 { font-family: var(--hud-display); font-weight: 440; font-size: clamp(2.8rem, 5.2vw, 5.4rem); line-height: 1.02; letter-spacing: -.04em; }
+.product-final > .hud-shell > p:not(.hud-eyebrow):not(.product-location) { max-width: 55ch; color: var(--product-body); line-height: 1.8; margin-bottom: 30px; }
+.product-other-links { display: flex; flex-wrap: wrap; gap: 20px 36px; margin: 40px 0 28px; }
+.product-other-links a { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--product-body); }
+.product-other-links a:hover { color: var(--product-highlight); }
+.product-location { color: var(--product-muted); font-size: 9px; }
+
+@media (max-width: 1000px) {
+  .product-hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .product-hero h1 { max-width: 18ch; }
+  .product-sequence { max-width: 680px; }
+  .product-benefits { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .product-benefits article, .product-benefits article:first-child { border: 0; border-top: 1px solid var(--product-rule); padding: 30px 0 0; }
+  .product-benefit-index { margin-bottom: 16px; }
+  .product-benefits p { max-width: 70ch; }
+  .product-companion { grid-template-columns: 50px minmax(0, 1fr); gap: 24px; }
+  .product-companion > a { grid-column: 2; justify-self: start; }
+}
+@media (max-width: 640px) {
+  .product-hero { padding-top: 30px; }
+  .product-breadcrumb { margin-bottom: 30px; font-size: 9px; }
+  .product-identity { margin-bottom: 34px; font-size: 17px; }
+  .product-system-code { font-size: 8px; letter-spacing: .06em; }
+  .product-hero h1 { font-size: clamp(2.75rem, 11.8vw, 4.6rem); max-width: 16ch; }
+  .product-hero .hud-eyebrow { font-size: 9px; letter-spacing: .12em; }
+  .product-actions { align-items: flex-start; flex-direction: column; gap: 24px; }
+  .product-actions .hud-btn { font-size: 9px; padding-inline: 20px; }
+  .product-audience { font-size: 9px; }
+  .product-connectors { gap: 16px 20px; margin-top: 36px; }
+  .product-connectors > .hud-mono { flex-basis: 100%; }
+  .product-workflow-grid, .product-scope-grid, .product-faq-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .product-workflow h3 { font-size: 14px; }
+  .product-companion { grid-template-columns: minmax(0, 1fr); }
+  .product-companion > a { grid-column: 1; }
+  .product-companion .hud-eyebrow { font-size: 9px; }
+  .product-other-links { flex-direction: column; gap: 20px; }
+  .hud-channel-row { grid-template-columns: minmax(0, 1fr) 44px; }
+  .hud-channel-row .hud-channel { padding-left: 14px; gap: 10px; }
+  .hud-channel-row .hud-channel-copy small { font-size: 8px; letter-spacing: .06em; }
+}

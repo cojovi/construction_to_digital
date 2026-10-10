@@ -41,7 +41,7 @@ export function HudFooter() {
           <div>
             <p>Systems</p>
             {solutions.map((solution) => (
-              <Link key={solution.slug} href={`/solutions/${solution.slug}`}>
+              <Link key={solution.slug} href={solution.href}>
                 {solution.shortName}
               </Link>
             ))}

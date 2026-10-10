@@ -1,7 +1,10 @@
 export type SolutionIcon = "blueprint" | "materials" | "operations" | "billing";
+export type ProductTheme = "cyan" | "amber" | "red" | "green";
 
 export type Solution = {
   slug: string;
+  href: `/${string}`;
+  theme: ProductTheme;
   name: string;
   shortName: string;
   category: string;
@@ -25,17 +28,19 @@ export type Solution = {
 export const solutions: readonly Solution[] = [
   {
     slug: "drafting-table",
+    href: "/draftingtable",
+    theme: "cyan",
     name: "The Drafting Table",
     shortName: "Drafting Table",
     category: "AI estimating system",
-    status: "Assisted pilot",
+    status: "Configured for your team",
     icon: "blueprint",
-    eyebrow: "Blueprint to takeoff",
-    headline: "Plans in. Structured quantities out.",
+    eyebrow: "Autonomous AI blueprint measurement",
+    headline: "Your blueprints. Measured by AI.",
     summary:
-      "An assisted estimating workflow for turning residential plan sets into consistent, reviewable gutter takeoffs.",
+      "An autonomous AI estimating agent that measures residential blueprints and produces roofing and gutter takeoffs for your team.",
     detail:
-      "The workflow identifies elevations, extracts gutter measurements and component counts, and prepares spreadsheet-ready output. Scale checks and ambiguous results are routed to human review before material decisions move forward.",
+      "Upload a residential plan set and let your AI agent extract roof and gutter measurements, count components, and assemble the takeoff. Pair it with Material Tracker to turn those quantities into a priced bid. We handle setup; your team runs the workflow and reviews the result.",
     proof:
       "Designed around a real roofing and gutter estimating workflow, not a generic document chatbot.",
     image: "/images/roofing-takeoff.jpg",
@@ -44,17 +49,17 @@ export const solutions: readonly Solution[] = [
     capabilities: [
       "Plan upload and sheet classification",
       "Scale-check workflow with manual verification",
-      "Gutter and elevation measurement extraction",
+      "Autonomous roof and gutter measurement",
       "Review flags for ambiguous results",
       "Structured CSV and JSON output",
-      "Material pricing handoff",
+      "Priced bids with Material Tracker",
     ],
     workflow: [
       "Upload a residential blueprint set",
       "Detect and verify scale per sheet",
       "Extract measurements and component counts",
       "Review confidence and flagged ambiguities",
-      "Export a structured takeoff",
+      "Export the takeoff or price a bid with Material Tracker",
     ],
     integrations: ["Blueprint PDF", "Spreadsheet review", "CSV", "JSON", "Material pricing"],
     safeguards: [
@@ -62,30 +67,32 @@ export const solutions: readonly Solution[] = [
       "Low-confidence output is held for manual review",
       "Ambiguous install scope is surfaced instead of guessed",
     ],
-    seoTitle: "AI Gutter Takeoff Software for Digital Blueprints",
+    seoTitle: "Autonomous AI Blueprint Measurement & Roofing Takeoffs",
     seoDescription:
-      "The Drafting Table supports residential gutter takeoffs from digital blueprints with scale checks, structured output, and human review gates.",
+      "Let AI measure residential blueprints and produce roofing and gutter takeoffs. Pair Drafting Table with Material Tracker for priced bids. Setup handled for your team.",
   },
   {
     slug: "material-intelligence",
-    name: "Construction Material Intelligence",
-    shortName: "Material Intelligence",
+    href: "/materialtracker",
+    theme: "amber",
+    name: "Material Tracker",
+    shortName: "Material Tracker",
     category: "Pricing data platform",
     status: "Active product",
     icon: "materials",
     eyebrow: "Supplier pricing intelligence",
     headline: "Know which price changed before the margin does.",
     summary:
-      "A construction material pricing layer that normalizes supplier files, preserves price history, and prepares clean data for estimating and ERP workflows.",
+      "Live supplier pricing for roofing teams, connected to the estimates, purchases, and systems that depend on it.",
     detail:
-      "Different supplier exports become one consistent schema. Current and historical pricing can then support estimates, purchasing review, job costing, and clean downstream exports without another brittle spreadsheet handoff.",
+      "Connect authorized distributor accounts, bring current material prices into one dashboard, and feed those prices into your estimating workflow. Pair Material Tracker with Drafting Table to turn blueprint quantities into complete bids, using the supplier pricing available to your business.",
     proof:
       "Built around live roofing supplier price-list formats and the people who reconcile them.",
     image: "/images/material-intelligence.jpg",
     imageAlt:
       "Roofing shingles, lumber, sheet material, insulation, fasteners, and flashing connected by cyan pricing data lines",
     capabilities: [
-      "Multi-vendor CSV ingestion",
+      "Live distributor API pricing",
       "Canonical product normalization",
       "Historical price tracking",
       "Price-change comparison",
@@ -93,13 +100,13 @@ export const solutions: readonly Solution[] = [
       "Estimating and ERP-ready data",
     ],
     workflow: [
-      "Import supplier price files",
+      "Connect authorized supplier accounts or import price files",
       "Map fields into a canonical schema",
       "Compare against dated price history",
       "Review material and unit changes",
       "Export clean pricing data",
     ],
-    integrations: ["Supplier CSV", "Estimating", "Job costing", "NetSuite-ready", "CSV", "JSON"],
+    integrations: ["Distributor APIs", "Drafting Table", "Supplier CSV", "Job costing", "NetSuite-ready", "CSV / JSON"],
     safeguards: [
       "Source vendor and effective date stay attached to pricing",
       "Normalization preserves the original record for audit",
@@ -107,12 +114,14 @@ export const solutions: readonly Solution[] = [
     ],
     seoTitle: "Construction Material Price Tracking Software",
     seoDescription:
-      "Normalize roofing supplier price lists, compare material pricing over time, and prepare auditable construction cost data for estimating, purchasing, job costing, and ERP import.",
+      "Connect live roofing supplier pricing to your estimating workflow. Material Tracker pairs with Drafting Table for priced bids and supports purchasing and job costing.",
   },
   {
     slug: "project-agent",
-    name: "ProjectAgent",
-    shortName: "ProjectAgent",
+    href: "/boltagent",
+    theme: "red",
+    name: "BoltAgent",
+    shortName: "BoltAgent",
     category: "Contractor operations agent",
     status: "Deployed workflow",
     icon: "operations",
@@ -121,7 +130,7 @@ export const solutions: readonly Solution[] = [
     summary:
       "A specialist AI agent that queries contractor job-management data for work-order status, crew assignments, scheduling gaps, and stale builder jobs.",
     detail:
-      "ProjectAgent provides a conversational layer over ECi Bolt. Office and field teams can look up a work order, see its current stage, surface unscheduled work, add controlled notes, and prepare follow-up without navigating multiple screens.",
+      "BoltAgent connects your office and field teams to ECi Bolt in plain language. Look up a work order, check its stage, find a crew assignment, and surface jobs that need attention without navigating multiple screens.",
     proof:
       "Deployed against a real contractor scheduling workflow with live API lookup as a core rule.",
     capabilities: [
@@ -147,10 +156,12 @@ export const solutions: readonly Solution[] = [
     ],
     seoTitle: "AI Contractor Scheduling and Work Order Agent",
     seoDescription:
-      "ProjectAgent gives contractors conversational access to live work orders, job status, crews, scheduling gaps, and builder follow-up workflows through ECi Bolt.",
+      "BoltAgent gives contractors conversational access to live work orders, job status, crews, scheduling gaps, and builder follow-up workflows through ECi Bolt.",
   },
   {
     slug: "billing-agent",
+    href: "/billingagent",
+    theme: "green",
     name: "BillingAgent",
     shortName: "BillingAgent",
     category: "Financial operations agent",
@@ -159,7 +170,7 @@ export const solutions: readonly Solution[] = [
     eyebrow: "Billing and finance operations",
     headline: "Ask a billing question without hunting through three systems.",
     summary:
-      "A conservative financial operations agent for invoice status, vendor-bill review, aging visibility, payment checks, and reconciliation support.",
+      "Your AI assistant for invoice status, vendor bills, receivables, and financial questions across your connected systems.",
     detail:
       "BillingAgent connects natural-language requests to accounting and receivables data. It gathers live context, flags exceptions, and prepares the answer while keeping payments, approvals, and outbound communication behind explicit human confirmation.",
     proof:
@@ -198,3 +209,9 @@ export const solutionBySlug = new Map(
 export function getSolution(slug: string) {
   return solutionBySlug.get(slug);
 }
+
+// Keep every retired HTML / Markdown route pointed at the same public URL.
+export const solutionRedirects: Record<string, string> = Object.fromEntries([
+  ...solutions.map((solution) => [`/solutions/${solution.slug}`, solution.href]),
+  ["/solutions/bolt-agent", "/boltagent"],
+]);

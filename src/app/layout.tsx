@@ -10,6 +10,7 @@ import { ReticleCursor } from "@/components/hud/reticle-cursor";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 import "./hud.css";
+import "./products.css";
 
 /**
  * Type system for SURVEY // LIVE INSTRUMENT:
@@ -148,6 +149,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`hud-root ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} h-full antialiased`}
     >
       <body className="hud-body">

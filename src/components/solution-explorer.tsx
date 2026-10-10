@@ -132,7 +132,7 @@ export function SolutionExplorer() {
                 <li key={capability}>{capability}</li>
               ))}
             </ul>
-            <Link className="text-link" href={`/solutions/${active.slug}`}>
+            <Link className="text-link" href={active.href}>
               Explore {active.shortName}
               <ArrowRightIcon size={17} weight="bold" aria-hidden="true" />
             </Link>

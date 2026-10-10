@@ -7,7 +7,7 @@ import { setTimeout as delay } from "node:timers/promises";
 let baseUrl = process.env.C2D_TEST_URL;
 let server;
 let serverLog = "";
-const pages = ["/", "/solutions/drafting-table", "/solutions/material-intelligence", "/solutions/project-agent", "/solutions/billing-agent", "/about", "/contact", "/privacy", "/agents"];
+const pages = ["/", "/draftingtable", "/materialtracker", "/boltagent", "/billingagent", "/about", "/contact", "/privacy", "/agents"];
 const mdPath = (path) => path === "/" ? "/index.md" : `${path}.md`;
 const request = (path, accept = "text/html", options = {}) => fetch(new URL(path, baseUrl), {
   ...options, headers: { Accept: accept, ...options.headers }, signal: AbortSignal.timeout(15_000),
@@ -110,6 +110,44 @@ for (const path of ["/audit-missing-page", "/solutions/not-a-product", "/nested/
     }
   });
 }
+
+test("legacy product links preserve campaign parameters and Markdown destinations", async () => {
+  const redirects = {
+    "/solutions/drafting-table": "/draftingtable",
+    "/solutions/material-intelligence": "/materialtracker",
+    "/solutions/project-agent": "/boltagent",
+    "/solutions/bolt-agent": "/boltagent",
+    "/solutions/billing-agent": "/billingagent",
+  };
+  for (const [from, to] of Object.entries(redirects)) {
+    for (const extension of ["", ".md"]) {
+      const response = await request(`${from}${extension}?utm_source=product-test`, "text/html", { redirect: "manual" });
+      assert.equal(response.status, 308, from);
+      const destination = new URL(response.headers.get("location"), baseUrl);
+      assert.equal(destination.pathname, `${to}${extension}`);
+      assert.equal(destination.searchParams.get("utm_source"), "product-test");
+      await response.arrayBuffer();
+    }
+  }
+});
+
+test("dedicated product pages expose canonical content and demo paths", async () => {
+  for (const path of ["/draftingtable", "/materialtracker", "/boltagent", "/billingagent"]) {
+    const html = await (await request(path)).text();
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+    assert.equal(new URL(canonical).pathname, path);
+    assert.equal((html.match(/<h1(?:\s|>)/g) ?? []).length, 1, path);
+    assert.match(html, /id="workflow"/);
+    assert.match(html, /href="mailto:/);
+    assert.ok((html.match(/<details>/g) ?? []).length >= 3, path);
+  }
+  const home = await (await request("/")).text();
+  assert.match(home, /Measured by autonomous AI/);
+  assert.match(home, /href="#systems"/);
+  for (const path of ["/draftingtable", "/materialtracker", "/boltagent", "/billingagent"]) {
+    assert.ok(home.includes(`href="${path}"`), path);
+  }
+});
 
 test("HTTP negotiation honors preference, exclusions, and unsupported types", async () => {
   for (const [accept, status, type] of [

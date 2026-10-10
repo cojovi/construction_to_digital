@@ -112,7 +112,8 @@ These are public browser/metadata identifiers, **not secret API keys**. Do not p
 | Brand, canonical URL, public contact, demo email template | [Site settings](src/lib/site.ts) |
 | Product copy, published status, workflow, safeguards | [Solution catalog](src/lib/solutions.ts) |
 | About, contact, privacy, agent guidance | [Information content](src/lib/information-pages.ts) |
-| Security headers, image rules, legacy redirects | [Next configuration](next.config.ts) |
+| Security headers and image rules | [Next configuration](next.config.ts) |
+| Legacy redirects and document negotiation | [Proxy](src/proxy.ts) |
 | Visual conventions | [Design system](design-system/construction-to-digital/MASTER.md) |
 
 <a name="usage"></a>
@@ -121,23 +122,23 @@ These are public browser/metadata identifiers, **not secret API keys**. Do not p
 ### Public routes
 
 - `/` — homepage, solution overview, and demo email links.
-- `/solutions/drafting-table` — blueprint-to-takeoff product information.
-- `/solutions/material-intelligence` — supplier-data product information.
-- `/solutions/project-agent` — contractor-operations product information.
-- `/solutions/billing-agent` — financial-operations product information.
+- `/draftingtable` — autonomous AI blueprint measurement and roofing takeoffs.
+- `/materialtracker` — supplier pricing and connected estimating.
+- `/boltagent` — contractor operations and ECi Bolt workflows.
+- `/billingagent` — construction billing and finance workflows.
 - `/about`, `/contact`, `/privacy`, `/agents` — company and website information.
 - `/llms.txt`, `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest` — discovery and platform metadata.
 
-The retired `/solutions/bolt-agent` route redirects to `/solutions/project-agent`; the corresponding `.md` route also redirects.
+All previous `/solutions/...` product routes redirect permanently to their short URLs, including `/solutions/bolt-agent`. Corresponding `.md` routes redirect too, preserving query parameters. See [product pages and palette conventions](docs/product-pages.md) when adding a product.
 
 ### Machine-readable documents
 
-Explicit URLs such as `/index.md`, `/contact.md`, and `/solutions/project-agent.md` work without a special header. Public page URLs also negotiate Markdown with `Accept: text/markdown`.
+Explicit URLs such as `/index.md`, `/contact.md`, and `/boltagent.md` work without a special header. Public page URLs also negotiate Markdown with `Accept: text/markdown`.
 
 ```bash
 # Read-only examples against your local development server.
 curl -i -H 'Accept: text/markdown' http://localhost:3000/
-curl -i http://localhost:3000/solutions/project-agent.md
+curl -i http://localhost:3000/boltagent.md
 ```
 
 Missing documents return `404`; unsupported negotiated representations return `406`. Explicit Markdown endpoints accept only `GET` and `HEAD`. Markdown and negotiation errors use no-store cache headers; HTML retains framework caching. See [the negotiation helper](src/lib/content-negotiation.ts) and [Markdown generator](src/lib/markdown.ts).
@@ -154,7 +155,7 @@ npm run check
 
 `C2D_TEST_URL` switches that suite to an existing deployment. Leave it unset for local validation; only target a remote environment you are authorized to check.
 
-**Builds and tests were not run for this docs-only task.** The commands describe the checked-in scripts, not a verified release result.
+If the current Turbopack Google Fonts loader reports a resolver error, `npm run build -- --webpack` provides the supported alternate build path.
 
 - [ ] Review changed solution copy in HTML and Markdown.
 - [ ] Exercise keyboard navigation, mobile layout, and reduced-motion behavior.
@@ -170,7 +171,10 @@ npm run check
 | :--- | :--- |
 | [Homepage](src/app/page.tsx) | Marketing sections and solution links. |
 | [Application layout](src/app/layout.tsx) | Fonts, global UI, metadata, structured data. |
-| [Solution route](src/app/solutions/%5Bslug%5D/page.tsx) | Generated landing pages from catalog entries. |
+| [Product renderer](src/components/product-page.tsx) | Dedicated product pages and metadata from catalog entries. |
+| [Product detail](src/lib/product-details.ts) | Product benefits, workflows, and FAQs. |
+| [Product themes](src/app/products.css) | Shared page styles and scoped selector colors. |
+| [Legacy solution route](src/app/solutions/%5Bslug%5D/page.tsx) | Redirects previous product URLs. |
 | [Information route](src/app/%5Binformation%5D/page.tsx) | Shared information-page renderer. |
 | [System console](src/components/hud/system-console.tsx) | Interactive solution selector, not live system telemetry. |
 | [Analytics](src/components/marketing-analytics.tsx) | Optional Google tag and marked-link click events. |

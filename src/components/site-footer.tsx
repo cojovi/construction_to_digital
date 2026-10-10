@@ -39,7 +39,7 @@ export function SiteFooter() {
           <div>
             <p className="footer-label">Solutions</p>
             {solutions.map((solution) => (
-              <Link key={solution.slug} href={`/solutions/${solution.slug}`}>
+              <Link key={solution.slug} href={solution.href}>
                 {solution.shortName}
               </Link>
             ))}
