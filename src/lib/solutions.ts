@@ -1,5 +1,5 @@
 export type SolutionIcon = "blueprint" | "materials" | "operations" | "billing";
-export type ProductTheme = "cyan" | "amber" | "red" | "green";
+export type ProductTheme = "cyan" | "purple" | "amber" | "red" | "green";
 
 export type Solution = {
   slug: string;
@@ -29,7 +29,7 @@ export const solutions: readonly Solution[] = [
   {
     slug: "drafting-table",
     href: "/draftingtable",
-    theme: "cyan",
+    theme: "purple",
     name: "The Drafting Table",
     shortName: "Drafting Table",
     category: "AI estimating system",

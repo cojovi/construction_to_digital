@@ -4,12 +4,12 @@ The public product URLs and themes are defined in `src/lib/solutions.ts`:
 
 | Product | URL | Theme | Primary accent |
 | --- | --- | --- | --- |
-| Drafting Table | `/draftingtable` | cyan | `#17C8F4` |
+| Drafting Table | `/draftingtable` | purple | `#B14CFF` |
 | Material Tracker | `/materialtracker` | amber | `#FBB224` |
 | BoltAgent | `/boltagent` | red | `#ED2C29` |
 | BillingAgent | `/billingagent` | green | `#39FF6A` |
 
-The cyan, red, and green colors follow the supplied color atlases. Amber uses the cyan atlas's secondary signal, with matching dark surfaces. Text highlights are lighter where needed for readable contrast.
+The purple, red, and green colors follow the supplied color atlases. Amber uses the cyan atlas's secondary signal, with matching dark surfaces. Cyan remains the main site palette. Text highlights are lighter where needed for readable contrast.
 
 `src/app/products.css` owns the palette tokens and shared product layouts. A product page's `data-product-theme` applies its palette to the page and shared header/footer. On the homepage, `data-tool-theme` scopes each palette to its row inside the boxed system selector. Keep the rest of the homepage in its existing cyan theme.
 

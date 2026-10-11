@@ -11,6 +11,17 @@
   --product-body: #c7d3d8;
   --product-muted: #849ba6;
 }
+[data-tool-theme="purple"], body:has(.product-page[data-product-theme="purple"]) {
+  --product-accent: #b14cff;
+  --product-highlight: #d7a3ff;
+  --product-carbon: #040308;
+  --product-panel: #171021;
+  --product-raised: #241834;
+  --product-rule: #3a2b4f;
+  --product-ink: #f5f2fa;
+  --product-body: #ddd7e5;
+  --product-muted: #9c93aa;
+}
 [data-tool-theme="amber"], body:has(.product-page[data-product-theme="amber"]) {
   --product-accent: #fbb224;
   --product-highlight: #ffd583;
