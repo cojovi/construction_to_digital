@@ -1,9 +1,10 @@
 <!-- COJOVI / SIGNAL — Construction to Digital project edition. Keep with readme-assets/. -->
 <a name="top"></a>
 
-<p align="center">
-  <img src="readme-assets/banner.svg" alt="Construction to Digital — physical work, digital leverage. A construction workflow marketing website." width="100%">
-</p>
+<picture>
+  <source media="(max-width: 640px)" srcset="readme-assets/showcase-mobile.svg">
+  <img src="readme-assets/showcase.svg" alt="Construction to Digital — cinematic construction software marketing experience and machine-readable content." width="100%">
+</picture>
 
 <h1 align="center">Construction to Digital</h1>
 
@@ -40,6 +41,23 @@ The application uses **Next.js 16.3.4, React 19.2.8, TypeScript, Tailwind CSS 4,
 
 > [!IMPORTANT]
 > **Demo requests are email handoffs.** Buttons use a `mailto:` link; visitors review and send their own message. This repository does not implement a lead-submission API, blueprint upload service, customer dashboard, billing integration, or MCP server. Product statuses and integration names are marketing content, not proof of capabilities running inside this website.
+
+## The engineering story
+
+**Turn a complex product portfolio into a coherent path from first impression to the next conversation.** This Next.js experience combines construction-themed motion, a shared solution catalog, dedicated landing pages, and representations for human and machine readers.
+
+<img src="readme-assets/site-capture.jpg" alt="Live Construction to Digital homepage with architectural digital-twin illustration and the headline Physical work. Digital leverage." width="100%">
+
+*Live site capture. This repository implements the website; products described on the site have separate runtimes.*
+
+- **Model content once.** [Solution data](src/lib/solutions.ts) feeds the homepage, product routes, and Markdown descriptions. [Product renderer](src/components/product-page.tsx) gives each offering its own page.
+- **Make the interface a demonstration of craft.** Motion, the [solution explorer](src/components/solution-explorer.tsx), and the [blueprint visual](src/components/blueprint-visual.tsx) give an abstract service portfolio a recognizable construction language.
+- **Serve more than HTML.** The [proxy](src/proxy.ts) and [content negotiation](src/lib/content-negotiation.ts) support Markdown and `llms.txt` while preserving Next.js navigation and response behavior.
+- **Keep the conversion boundary honest.** Demo links open an email draft; this website does not implement the described construction-product backends.
+
+[Explore the live experience ↗](https://construction-to-digital.vercel.app)
+
+**Verification:** production build, lint, and post-build type check passed; 31 unit and 24 HTTP tests passed during this review. The checked dependency tree has security advisories and needs maintenance; passing tests are not a security certification.
 
 <a name="architecture"></a>
 ## `> trace_the_signal`
@@ -204,3 +222,5 @@ Maintained in **[cojovi/construction_to_digital](https://github.com/cojovi/const
 </p>
 
 <p align="center"><a href="#top">↑ Back to the signal</a></p>
+
+Showcase artwork uses embedded typefaces; see [font licenses](readme-assets/SHOWCASE-FONT-LICENSES.txt).
